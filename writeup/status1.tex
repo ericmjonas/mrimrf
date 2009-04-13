@@ -1,0 +1,32 @@
+
+
+My project will begin by initially attempting to perform 3-d phase
+unwrapping using Markov Random Fields and comparing this approach with
+existing tools, such as the PRELUDE package from FSL.
+
+I'm going to be using Brenden Frey's 2006 IEEE Trans Biomed. Image. paper
+on the topic as a starting point. Frey's paper uses a form of iterated
+conditional modes to find the MAP estimate for the MRF. 
+
+I plan on using a combination of Markov-chain Monte Carlo approximate
+sampling algorithms to solve the MRFs, which I feel will: 
+  1. prove easier to implement
+  2. be less computationally efficient but much more parallelizable
+  3. be more amenable to extension, by decoupling the ``model'' we're 
+solving (sampling from) from the inference method. 
+
+I may also attempt to implement a form of Systematic Stochastic
+Search, a scheme for producing _exact_ samples from MRFs that I have
+worked on with some collaborators and will be presented at this
+month's AI Stats conference.
+
+By decoupling the model from the inference step, I hope to be able to
+extend Frey's original model in several ways: 
+   1. 3D vs 2D
+   2. create hyper-priors on the latent smoothness potential 
+   3. explore advantages in moving from a lattice to a more  densely-connected
+MRF. 
+
+I have already acquired data from Div and Audrey for initial experimentation. 
+This week I plan on beginning playing with that data, and constructing the
+initial MRF for inference. 
