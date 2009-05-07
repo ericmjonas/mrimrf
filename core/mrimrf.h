@@ -10,9 +10,13 @@ class MRIMRF : boost::noncopyable
 public:
   MRIMRF(int MaxWrapCount, phase_cube_t obsval);
   
-  void sequential_gibbs_scan(); 
+  void sequential_gibbs_scan();
+  void random_gibbs_scan();
+ 
   phase_cube_t getLatentVals(); 
   void setLatentVals(const phase_cube_t & v);
+  void setTemp(float t); 
+  float getTemp(); 
 
 private:
   const int MAXWRAPCOUNT_; 
@@ -22,7 +26,7 @@ private:
 
   void gibbsAtVoxel(int i, int j, int k); 
   inline float gauss_markov_prior(float x1, float x2) {
-    return (x1 -x2) * (x1 - x2); 
+    return abs(x1 -x2);//  * (x1 - x2) * (x1 -x2); 
   }
 
   rng_t rng_; 

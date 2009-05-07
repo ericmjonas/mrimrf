@@ -22,31 +22,18 @@ void MRIMRF::sequential_gibbs_scan()
 
 }
 
-// void MRIMRF::random_gibbs_scan()
-// {
-//   // returns logscore
-//   std::vector<int> * indices = new std::vector<int>(); 
+void MRIMRF::random_gibbs_scan()
+{
 
-//   for (int i = 0; i < indices->size(); i++) {
-//     (*indices)[i] = i; 
-//   }
-//   random_shuffle(indices->begin(), indices->end()); 
+  // huge vector, create on heap
+  for (int i = 0; i < latentVals_.num_elements(); i++) {
+    int i = intrand(rng_, 0, latentVals_.shape()[0]-1); 
+    int j = intrand(rng_, 0, latentVals_.shape()[1]-1); 
+    int k = intrand(rng_, 0, latentVals_.shape()[2]-1); 
+    gibbsAtVoxel(i, j, k); 
+  }
 
-//   logScore_ = 0; // total hack here, 
-//   for (std::vector<int>::iterator pos = indices->begin(); 
-//        pos != indices->end(); ++pos)
-//     {
-//       int i = *pos % IMAX_; 
-//       int j = *pos / IMAX_; 
-//       //std::cout << i << ' ' << j << std::endl; 
-//       latent_t newval = sample(i, j); 
-//       x_[j][i] = newval; 
-//     }
-//   delete indices; 
-
-//   return logScore_; 
-
-// }
+}
 
 void MRIMRF::gibbsAtVoxel(int i, int j, int k)
 {
@@ -88,17 +75,30 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
       score += gauss_markov_prior(possibleobsval, latentVals_[i][j][k+1]); 
     }
     
-    probvect[phase_cycles + MAXWRAPCOUNT_] = -score / temp_; 
+    probvect[phase_cycles + MAXWRAPCOUNT_] = exp(-score / temp_); 
     
   }
+  
+//   double sum = logSumProbVect(probvect); 
+//   for(int iq = 0; iq < probvect.size(); iq++) {
+//     probvect[iq] = exp(probvect[iq] - sum); 
+//   }
+//   int phasesel = sampleFromProbabilities(rng_, probvect); 
 
-  double sum = logSumProbVect(probvect); 
-  for(int iq = 0; iq < probvect.size(); iq++) {
-    probvect[iq] = exp(probvect[iq] - sum); 
+//   latentVals_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
+  
+  double sum = 0.0; 
+  for(int qi = 0; qi < probvect.size(); qi++) {
+    sum += probvect[qi]; 
   }
+  
+  for(int qi = 0; qi < probvect.size(); qi++) {
+    probvect[qi] = probvect[qi] / sum; 
+  }
+  
   int phasesel = sampleFromProbabilities(rng_, probvect); 
 
-  latentVals_[i][j][k] = obsval; //  + 2*PI*(phasesel - MAXWRAPCOUNT_); 
+  latentVals_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
   
 }
 
@@ -131,4 +131,15 @@ void MRIMRF::setLatentVals(const phase_cube_t & v)
 //   std::cout << "latentVals[0, 3, 4]:"  
 // 	    << v[0][3][4] << std::endl;
   
+}
+
+void MRIMRF::setTemp(float f)
+{
+  temp_ = f; 
+
+}
+
+float MRIMRF::getTemp()
+{
+  return temp_; 
 }
