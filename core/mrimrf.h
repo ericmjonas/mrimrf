@@ -17,6 +17,7 @@ public:
   void setLatentVals(const phase_cube_t & v);
   void setTemp(float t); 
   float getTemp(); 
+  void setSeed(int s); 
 
 private:
   const int MAXWRAPCOUNT_; 
@@ -26,7 +27,7 @@ private:
 
   void gibbsAtVoxel(int i, int j, int k); 
   inline float gauss_markov_prior(float x1, float x2) {
-    return abs(x1 -x2);//  * (x1 - x2) * (x1 -x2); 
+    return (x1 -x2) * (x1 - x2); 
   }
 
   rng_t rng_; 

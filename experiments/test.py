@@ -8,6 +8,8 @@ from synth import synth
 from synth import util
 import core
 
+pyplot.ion()
+
 N = 40
 pb = synth.plane_box(N, 10, 1.0, 6)
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
@@ -16,7 +18,8 @@ pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
 print pb_wrapped.shape
 
 mrf = core.pymrimrf.MRIMRF(2, pb_wrapped)
-temps = np.linspace(100, 1, 100, -1)
+#temps = np.linspace(100, 1, 100, -1)
+temps = np.logspace(2, 0, 100, -1)
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t

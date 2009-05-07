@@ -143,3 +143,9 @@ float MRIMRF::getTemp()
 {
   return temp_; 
 }
+
+void MRIMRF::setSeed(int x)
+{
+  rng_.seed(x); 
+}
+

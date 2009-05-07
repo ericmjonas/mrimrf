@@ -21,6 +21,23 @@ def plane_box(N, r, min, max):
 
     return d
 
+def sphere(N, R, phasemin, phasemax):
+    """
+    Generate a centered sphere with phase that varies from min
+    to max
+    """
+    d = np.zeros((N, N), dtype=np.float)
+
+    
+    x_center = N/2
+    y_center = N/2
+    for x in xrange(N):
+        for y in xrange(N):
+            r = np.sqrt((x - x_center)**2 + (y-y_center)**2)
+            if r < R:
+                d[x, y] = phasemax -  (phasemax-phasemin) * r/R
+    return d
+
 
 def test_plane_box():
     pb = plane_box(256, 80, 1.0, 20.0)
@@ -38,3 +55,13 @@ def test_plane_box_small():
     pyplot.subplot(1, 2, 2)
     pyplot.imshow(util.wrap_phase(pb), cmap=pyplot.cm.gray, vmin=-np.pi, vmax=np.pi)
     pyplot.show()
+
+def test_sphere():
+    pb = sphere(256, 60, 1.0, 20.0)
+    pyplot.subplot(1, 2, 1)
+    pyplot.imshow(pb, cmap=pyplot.cm.gray)
+    pyplot.subplot(1, 2, 2)
+    pyplot.imshow(util.wrap_phase(pb), cmap=pyplot.cm.gray, vmin=-np.pi, vmax=np.pi)
+    pyplot.show()
+
+
