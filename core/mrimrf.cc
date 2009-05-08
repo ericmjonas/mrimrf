@@ -1,10 +1,11 @@
 #include <mrimrf.h>
 #include "util.h"
+#include "types.h"
 
 MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
   MAXWRAPCOUNT_(MaxWrapCount),
   observation_(obsval), 
-  latentVals_(boost::extents[obsval.shape()[0]][obsval.shape()[1]][obsval.shape()[2]]),
+  latentPhaseWraps_(boost::extents[obsval.shape()[0]][obsval.shape()[1]][obsval.shape()[2]]),
   temp_(1.0), 
   score_(0.0)
 {
@@ -14,9 +15,9 @@ MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
 
 void MRIMRF::sequential_gibbs_scan()
 {
-  for(int i = 0; i < latentVals_.shape()[0]; ++i) {
-    for(int j = 0; j < latentVals_.shape()[1]; ++j) {
-      for(int k = 0; k < latentVals_.shape()[2]; ++k) {
+  for(int i = 0; i < latentPhaseWraps_.shape()[0]; ++i) {
+    for(int j = 0; j < latentPhaseWraps_.shape()[1]; ++j) {
+      for(int k = 0; k < latentPhaseWraps_.shape()[2]; ++k) {
 	gibbsAtVoxel(i, j, k); 
       }
     }
@@ -28,10 +29,10 @@ void MRIMRF::random_gibbs_scan()
 {
 
   // huge vector, create on heap
-  for (int i = 0; i < latentVals_.num_elements(); i++) {
-    int i = intrand(rng_, 0, latentVals_.shape()[0]-1); 
-    int j = intrand(rng_, 0, latentVals_.shape()[1]-1); 
-    int k = intrand(rng_, 0, latentVals_.shape()[2]-1); 
+  for (int i = 0; i < latentPhaseWraps_.num_elements(); i++) {
+    int i = intrand(rng_, 0, latentPhaseWraps_.shape()[0]-1); 
+    int j = intrand(rng_, 0, latentPhaseWraps_.shape()[1]-1); 
+    int k = intrand(rng_, 0, latentPhaseWraps_.shape()[2]-1); 
     gibbsAtVoxel(i, j, k); 
   }
 
@@ -48,10 +49,8 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
   
   for(int phase_cycles = -MAXWRAPCOUNT_; phase_cycles < (MAXWRAPCOUNT_ + 1);
       phase_cycles++) {
-    
-    float possibleobsval = obsval + 2*PI*phase_cycles; 
 
-    latentVals_[i][j][k] = possibleobsval; 
+    latentPhaseWraps_[i][j][k] = phase_cycles; 
     
     float score = computeLogScoreAtVoxel(i, j, k); 
 
@@ -65,7 +64,7 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
 //   }
 //   int phasesel = sampleFromProbabilities(rng_, probvect); 
 
-//   latentVals_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
+//   latentPhaseWraps_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
   
   double sum = 0.0; 
   for(int qi = 0; qi < probvect.size(); qi++) {
@@ -78,7 +77,7 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
   
   int phasesel = sampleFromProbabilities(rng_, probvect); 
 
-  latentVals_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
+  latentPhaseWraps_[i][j][k] = phasesel - MAXWRAPCOUNT_; 
   float score_contrib_from_new_value = computeLogScoreAtVoxel(i, j, k); 
 
   float scoredelta = score_contrib_from_new_value - 
@@ -87,20 +86,37 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
 
 }
 
-phase_cube_t MRIMRF::getLatentVals()
+phase_cube_t MRIMRF::getLatentPhases()
 {
-  return latentVals_; 
+  phase_cube_t pc(boost::extents[latentPhaseWraps_.shape()[0]][latentPhaseWraps_.shape()[1]][latentPhaseWraps_.shape()[2]]);
+  
+  // compute latent phases
+  for(int i = 0; i < latentPhaseWraps_.shape()[0]; ++i) {
+    for(int j = 0; j < latentPhaseWraps_.shape()[1]; ++j) {
+      for(int k = 0; k < latentPhaseWraps_.shape()[2]; ++k) {
+	pc[i][j][k] = getCurrentPhaseValue(i, j, k); 
+      }
+    }
+  }
+  
+  return pc; 
+  
+}
+
+wrap_cube_t MRIMRF::getLatentPhaseWraps()
+{
+  return latentPhaseWraps_; 
 
 }
 
-void MRIMRF::setLatentVals(const phase_cube_t & v)
+void MRIMRF::setLatentPhaseWraps(const wrap_cube_t & v)
 {
   for(int i = 0; i < 3; i++) {
-    if(latentVals_.shape()[i] != v.shape()[i]) {
+    if(latentPhaseWraps_.shape()[i] != v.shape()[i]) {
       throw std::runtime_error("attempted to set latent vars with invalid shape"); 
     }
   }
-  latentVals_ = v; 
+  latentPhaseWraps_ = v; 
   
 //   for (int i = 0; i < v.shape()[0]; i++) {
 //     std::cout << "I = " << i << std::endl; 
@@ -138,35 +154,35 @@ void MRIMRF::setSeed(int x)
 
 float MRIMRF::computeLogScoreAtVoxel(int i, int j, int k)
 {
-  float currentval = latentVals_[i][j][k]; 
-    
+  float current_phase_value = getCurrentPhaseValue(i, j, k); 
+
   // now for each of the neighboring pixels, compute the score, and
   // add it to the total score
   
   float score(0.0); 
   
   if(i > 0) { 
-    score += gauss_markov_prior(currentval, latentVals_[i-1][j][k]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i-1,j,k)); 
   }
   
   if(i < (observation_.shape()[0]-1)) { 
-    score += gauss_markov_prior(currentval, latentVals_[i+1][j][k]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i+1,j,k)); 
   }
   
   if(j > 0) { 
-    score += gauss_markov_prior(currentval, latentVals_[i][j-1][k]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i,j-1,k)); 
   }
   
   if(j < (observation_.shape()[1]-1)) { 
-    score += gauss_markov_prior(currentval, latentVals_[i][j+1][k]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i,j+1,k)); 
   }
   
   if(k > 0) { 
-    score += gauss_markov_prior(currentval, latentVals_[i][j][k-1]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i,j,k-1)); 
   }
   
   if(k < (observation_.shape()[2]-1)) { 
-    score += gauss_markov_prior(currentval, latentVals_[i][j][k+1]); 
+    score += gauss_markov_prior(current_phase_value, getCurrentPhaseValue(i,j,k+1)); 
   }
   
   return -score/temp_; 
@@ -178,9 +194,9 @@ float MRIMRF::recomputeLogScore()
   float score(0.0); 
 
   // Initially compute score
-  for(int i = 0; i < latentVals_.shape()[0]; ++i) {
-    for(int j = 0; j < latentVals_.shape()[1]; ++j) {
-      for(int k = 0; k < latentVals_.shape()[2]; ++k) {
+  for(int i = 0; i < latentPhaseWraps_.shape()[0]; ++i) {
+    for(int j = 0; j < latentPhaseWraps_.shape()[1]; ++j) {
+      for(int k = 0; k < latentPhaseWraps_.shape()[2]; ++k) {
 	score += computeLogScoreAtVoxel(i, j, k); 
       }
     }

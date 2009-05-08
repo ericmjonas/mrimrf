@@ -3,6 +3,7 @@
 
 #include <boost/utility.hpp>
 #include "types.h"
+#include "util.h"
 
 
 class MRIMRF : boost::noncopyable
@@ -13,8 +14,10 @@ public:
   void sequential_gibbs_scan();
   void random_gibbs_scan();
  
-  phase_cube_t getLatentVals(); 
-  void setLatentVals(const phase_cube_t & v);
+  phase_cube_t getLatentPhases(); 
+  wrap_cube_t getLatentPhaseWraps(); 
+  void setLatentPhaseWraps(const wrap_cube_t & wc); 
+
   void setTemp(float t); 
   float getTemp(); 
   void setSeed(int s); 
@@ -27,8 +30,7 @@ public:
 private:
   const int MAXWRAPCOUNT_; 
   const phase_cube_t observation_; 
-  phase_cube_t latentVals_; 
-  observation_tensor_t obsTensor_; 
+  wrap_cube_t latentPhaseWraps_; 
 
   void gibbsAtVoxel(int i, int j, int k); 
   inline float gauss_markov_prior(float x1, float x2) {
@@ -36,6 +38,11 @@ private:
   }
   
   float recomputeLogScore(); 
+
+  inline float getCurrentPhaseValue(int i, int j, int k) {
+    float phase = observation_[i][j][k] + 2*PI*latentPhaseWraps_[i][j][k]; 
+    return phase;
+  }
   
   float computeLogScoreAtVoxel(int i, int j, int k); 
 

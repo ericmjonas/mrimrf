@@ -25,15 +25,18 @@ BOOST_PYTHON_MODULE(pymrimrf)
   import_array();  
 
   pymulconv<float, 3>(); 
-  pymulconv<float, 4>(); 
+  pymulconv<float, 4>();
+ 
+  pymulconv<char, 3>(); 
 
   def("hello", &hello); 
   def("testarray", &testarray); 
 
   class_<MRIMRF, boost::noncopyable>("MRIMRF", init<int, phase_cube_t>())
     .def("sequential_gibbs_scan", &MRIMRF::sequential_gibbs_scan)
-    .add_property("latentVars", &MRIMRF::getLatentVals, 
-		  &MRIMRF::setLatentVals)
+    .add_property("latentPhase", &MRIMRF::getLatentPhases)
+    .add_property("latentPhaseWraps", &MRIMRF::getLatentPhaseWraps, 
+		  &MRIMRF::setLatentPhaseWraps)  
     .add_property("temp", &MRIMRF::getTemp, &MRIMRF::setTemp)
     .def("random_gibbs_scan", &MRIMRF::random_gibbs_scan)
     .def("setSeed", &MRIMRF::setSeed)

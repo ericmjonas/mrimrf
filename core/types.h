@@ -6,6 +6,7 @@
 #include <boost/random.hpp>
 
 
+typedef boost::multi_array<char, 3> wrap_cube_t;
 typedef boost::multi_array<float, 3> phase_cube_t;
 typedef boost::multi_array<float, 4> observation_tensor_t; 
 
