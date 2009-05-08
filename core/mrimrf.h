@@ -18,11 +18,6 @@ public:
   void setTemp(float t); 
   float getTemp(); 
   void setSeed(int s); 
-  
-  float getLogScore() { 
-    return score_; 
-  }
-  
 
 private:
   const int MAXWRAPCOUNT_; 
@@ -34,14 +29,10 @@ private:
   inline float gauss_markov_prior(float x1, float x2) {
     return (x1 -x2) * (x1 - x2); 
   }
-  
-  float recomputeLogScore(); 
-  
-  float computeLogScoreAtVoxel(int i, int j, int k); 
 
   rng_t rng_; 
   float temp_; 
-  float score_; 
+
 }; 
 
 
