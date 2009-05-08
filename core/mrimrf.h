@@ -18,7 +18,10 @@ public:
   void setTemp(float t); 
   float getTemp(); 
   void setSeed(int s); 
-
+  
+  float getLogScore() { 
+    return score_; 
+  }
   
 
 private:
@@ -38,7 +41,7 @@ private:
 
   rng_t rng_; 
   float temp_; 
-
+  float score_; 
 }; 
 
 

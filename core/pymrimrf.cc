@@ -37,6 +37,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
     .add_property("temp", &MRIMRF::getTemp, &MRIMRF::setTemp)
     .def("random_gibbs_scan", &MRIMRF::random_gibbs_scan)
     .def("setSeed", &MRIMRF::setSeed)
+    .add_property("score", &MRIMRF::getLogScore)
     ;
 
 //   class_<GibbsImageMRF>("GibbsImageMRF", init<const ObsEnergy_t & >())

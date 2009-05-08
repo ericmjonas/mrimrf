@@ -5,8 +5,10 @@ MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
   MAXWRAPCOUNT_(MaxWrapCount),
   observation_(obsval), 
   latentVals_(boost::extents[obsval.shape()[0]][obsval.shape()[1]][obsval.shape()[2]]),
-  temp_(1.0)
+  temp_(1.0), 
+  score_(0.0)
 {
+  score_ = recomputeLogScore(); 
 
 }
 
@@ -40,8 +42,10 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
 {
   probvector_t probvect(MAXWRAPCOUNT_ * 2 + 1); 
 
-  float obsval = observation_[i][j][k]; 
+  float score_contrib_from_original_value = computeLogScoreAtVoxel(i, j, k); 
 
+  float obsval = observation_[i][j][k]; 
+  
   for(int phase_cycles = -MAXWRAPCOUNT_; phase_cycles < (MAXWRAPCOUNT_ + 1);
       phase_cycles++) {
     
@@ -75,7 +79,12 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
   int phasesel = sampleFromProbabilities(rng_, probvect); 
 
   latentVals_[i][j][k] = obsval + 2*PI*(phasesel - MAXWRAPCOUNT_); 
-  
+  float score_contrib_from_new_value = computeLogScoreAtVoxel(i, j, k); 
+
+  float scoredelta = score_contrib_from_new_value - 
+    score_contrib_from_original_value; 
+  score_ += scoredelta; 
+
 }
 
 phase_cube_t MRIMRF::getLatentVals()
@@ -112,6 +121,7 @@ void MRIMRF::setLatentVals(const phase_cube_t & v)
 void MRIMRF::setTemp(float f)
 {
   temp_ = f; 
+  score_ = recomputeLogScore();
 
 }
 
@@ -160,4 +170,23 @@ float MRIMRF::computeLogScoreAtVoxel(int i, int j, int k)
   }
   
   return -score/temp_; 
+}
+
+float MRIMRF::recomputeLogScore()
+{
+
+  float score(0.0); 
+
+  // Initially compute score
+  for(int i = 0; i < latentVals_.shape()[0]; ++i) {
+    for(int j = 0; j < latentVals_.shape()[1]; ++j) {
+      for(int k = 0; k < latentVals_.shape()[2]; ++k) {
+	score += computeLogScoreAtVoxel(i, j, k); 
+      }
+    }
+  }
+
+  return score; 
+
+
 }
