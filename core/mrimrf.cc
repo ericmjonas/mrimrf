@@ -35,6 +35,7 @@ void MRIMRF::random_gibbs_scan()
 
 }
 
+
 void MRIMRF::gibbsAtVoxel(int i, int j, int k)
 {
   probvector_t probvect(MAXWRAPCOUNT_ * 2 + 1); 
@@ -45,37 +46,12 @@ void MRIMRF::gibbsAtVoxel(int i, int j, int k)
       phase_cycles++) {
     
     float possibleobsval = obsval + 2*PI*phase_cycles; 
-    
-    // now for each of the neighboring pixels, compute the score, and
-    // add it to the total score
 
-    float score(0.0); 
-     
-    if(i > 0) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i-1][j][k]); 
-    }
+    latentVals_[i][j][k] = possibleobsval; 
     
-    if(i < (observation_.shape()[0]-1)) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i+1][j][k]); 
-    }
-    
-    if(j > 0) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i][j-1][k]); 
-    }
-    
-    if(j < (observation_.shape()[1]-1)) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i][j+1][k]); 
-    }
-    
-    if(k > 0) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i][j][k-1]); 
-    }
-    
-    if(k < (observation_.shape()[2]-1)) { 
-      score += gauss_markov_prior(possibleobsval, latentVals_[i][j][k+1]); 
-    }
-    
-    probvect[phase_cycles + MAXWRAPCOUNT_] = exp(-score / temp_); 
+    float score = computeLogScoreAtVoxel(i, j, k); 
+
+    probvect[phase_cycles + MAXWRAPCOUNT_] = exp(score); 
     
   }
   
@@ -149,3 +125,39 @@ void MRIMRF::setSeed(int x)
   rng_.seed(x); 
 }
 
+
+float MRIMRF::computeLogScoreAtVoxel(int i, int j, int k)
+{
+  float currentval = latentVals_[i][j][k]; 
+    
+  // now for each of the neighboring pixels, compute the score, and
+  // add it to the total score
+  
+  float score(0.0); 
+  
+  if(i > 0) { 
+    score += gauss_markov_prior(currentval, latentVals_[i-1][j][k]); 
+  }
+  
+  if(i < (observation_.shape()[0]-1)) { 
+    score += gauss_markov_prior(currentval, latentVals_[i+1][j][k]); 
+  }
+  
+  if(j > 0) { 
+    score += gauss_markov_prior(currentval, latentVals_[i][j-1][k]); 
+  }
+  
+  if(j < (observation_.shape()[1]-1)) { 
+    score += gauss_markov_prior(currentval, latentVals_[i][j+1][k]); 
+  }
+  
+  if(k > 0) { 
+    score += gauss_markov_prior(currentval, latentVals_[i][j][k-1]); 
+  }
+  
+  if(k < (observation_.shape()[2]-1)) { 
+    score += gauss_markov_prior(currentval, latentVals_[i][j][k+1]); 
+  }
+  
+  return -score/temp_; 
+}

@@ -11,9 +11,9 @@ import core
 pyplot.ion()
 
 N = 40
-#pb = synth.plane_box(N, 10, 1.0, 6)
-pb = synth.sphere(N, 15, 1.0, 20)
-pb += np.random.rand(N, N) * 3
+pb = synth.plane_box(N, 10, 1.0, 6)
+#pb = synth.sphere(N, 15, 1.0, 20)
+pb += np.random.rand(N, N) * 0.5
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
 print pb_wrapped.shape
 pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
