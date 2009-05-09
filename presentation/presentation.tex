@@ -1,0 +1,97 @@
+\documentclass{beamer}
+\usetheme{Warsaw}
+
+\mode<presentation>
+
+\title{Bayesian Phase Unwrapping with Factor Graphs}
+\author{Eric Jonas}
+\date{May 12, 2009}
+\institute[6.556]{MIT Department of Brain and Cognitive Sciences}
+
+
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\section{Phase Unwrapping for MR}
+
+
+\section{Factor Graphs and Markov Random Fields}
+\begin{frame}
+\frametitle{Markov Random Fields and Factor Graphs}
+What is an MRF? Where are they used? 
+\end{frame}
+
+\begin{frame} 
+\frametitle{Factor Graphs for Low-Level Vision}
+Properties of image MRFs
+large number of verticies
+O(1) (constant local) connectivity
+\end{frame}
+
+\begin{frame} 
+\frametitle{MRFs for Phase Unwrapping}
+Two views on our MRF
+\end{frame}
+
+\section{Inference in MRFs}
+
+\begin{frame}
+  \frametitle{Markov-Chain Monte Carlo}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Metropolis Hastings}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Gibbs Sampling}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tempering} 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Swendsen-Wang}
+\end{frame}
+
+\begin{frame}
+  \frametitle{MRFs and Parallelism}
+\end{frame}
+
+\section{Performance}
+
+\subsection{Synthetic Data}
+\begin{frame}
+  \frametitle{2-D Synthetic Data}
+\end{frame}
+
+\begin{frame}
+  \frametitle{3-D Synthetic Data}
+\end{frame}
+
+\subsection{Phantoms}
+
+\subsection{Actual Data}
+\begin{frame}
+  \frametitle{Div and Audrey}
+\end{frame}
+
+\section{Methods Comparison}
+\begin{frame}
+  \frametitle{PRELUDE}
+\end{frame}
+
+\section{Concluson and Future Directions}
+\begin{frame}
+  \frametitle{Where to now?}
+  Exact sampling using Systematic Stochsatic Search
+  Better neighborhood connectivity / likelihood? 
+  GPU implementation 
+  Better visualization of posterior?
+\end{frame}
+
+\end{document}

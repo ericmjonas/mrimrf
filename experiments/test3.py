@@ -10,10 +10,10 @@ import core
 
 pyplot.ion()
 
-N = 30
+N = 100
 MAXPHASE = 4
 #pb = synth.plane_box(N, 10, 1.0, 20)
-pb = synth.sphere(N, 10, 1.0, MAXPHASE*np.pi)
+pb = synth.sphere(N, 30, 1.0, MAXPHASE*np.pi)
 pb += np.random.rand(N, N) * 0
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
 print pb_wrapped.shape
@@ -32,7 +32,7 @@ plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
 temps = np.linspace(100, 1, 100, -1)
 print "trying", len(temps), "temps"
 for t in temps:
-    print "t = ", t, "score = ", mrf.score
+    print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
     for i in range(100):
         mrf.sequential_gibbs_scan()
