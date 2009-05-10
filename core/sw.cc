@@ -98,7 +98,7 @@ void flip_edges_off(graph_t & g, rng_t & rng, float p)
   std::list<graph_t::edge_descriptor> edges_to_remove; 
   ei_t ei, ei_end;
   for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
-    if (p < unirand(rng)) {
+    if (p > unirand(rng)) {
       edges_to_remove.push_back(*ei); 
     }
   }
@@ -149,31 +149,57 @@ struct set_color : public base_visitor<set_color> {
   template <class Vertex, class Graph>
   void operator()(Vertex v, Graph & G) {
     coords_t coords= G[v].coordinates; 
+    char current = wrapcube_[coords[0]][coords[1]][coords[2]]; 
     wrapcube_[coords[0]][coords[1]][coords[2]] = tgtcolor_; 
   }
 
-  wrap_cube_t wrapcube_; 
+  wrap_cube_t & wrapcube_; 
   int tgtcolor_;
 
 }; 
 
 void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
 {
-
+  std::cout << "Performing sw move" << std::endl;
   graph_t g = wrap_cube_to_graph(wrapcube); 
   
   disconnect_nonsimilar_phase_edges(g); 
   
-  flip_edges_off(g, rng, 0.3); 
+  flip_edges_off(g, rng, 0.000); 
   
   // randomly get a component
 
-  // ugh, this is linear! FIXME!
-  graph_t::vertex_descriptor d = random_vertex(g, rng);
-
-  // what are we going to color it? 
+  std::vector<int> component(num_vertices(g));
+  
+  int numcomp = connected_components(g, &component[0]); 
+  int comp_to_change = intrand(rng, 0, numcomp); 
   int c = intrand(rng, minval, maxval); 
-  std::vector<vertex_color_t> color(num_vertices(g)); 
-  depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, c)))); 
+  std::cout << "There are " << numcomp << " connected components " << std::endl;
+  typedef graph_t::vertex_iterator vi_t; 
+  std::pair<vi_t, vi_t> vp = vertices(g); 
+  int pos(0); 
+  for(vi_t v = vp.first; v != vp.second; ++v) {
+    if(component[pos] == comp_to_change) { 
+      int i = g[*v].coordinates[0]; 
+      int j = g[*v].coordinates[1]; 
+      int k = g[*v].coordinates[2]; 
+      wrapcube[i][j][k] = c; 
+    }
+    pos++; 
+  }
+  
+
+//   // ugh, this is linear! FIXME!
+//   graph_t::vertex_descriptor d = random_vertex(g, rng);
+// //   std::cout << "selected vertex at location" << g[d].coordinates[0]
+// //  	    << " " << g[d].coordinates[1]
+// //  	    << " " << g[d].coordinates[2] << std::endl; 
+// //   std::cout << "its color is " << wrapcube[g[d].coordinates[0]][g[d].coordinates[1]][g[d].coordinates[1]]
+// // 	    << std::endl; 
+//   // what are we going to color it? 
+//   int c = intrand(rng, minval, maxval); 
+// //   std::cout << "Changing to " << c << std::endl; 
+//   std::vector<vertex_color_t> color(num_vertices(g)); 
+//   depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, c)))); 
 
 }

@@ -213,7 +213,7 @@ void MRIMRF::swendsenWangMove()
 {
 
   swendsen_wang(latentPhaseWraps_, rng_, -MAXWRAPCOUNT_, MAXWRAPCOUNT_); 
-
+  
 }
 
 coloring_cube_t MRIMRF::getColoring()

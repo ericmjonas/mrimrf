@@ -27,7 +27,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
   pymulconv<float, 3>(); 
   pymulconv<float, 4>();
  
-  pymulconv<char, 3>(); 
+  pymulconv<short, 3>(); 
   pymulconv<size_t, 3>(); 
 
   def("hello", &hello); 
