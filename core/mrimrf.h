@@ -27,6 +27,7 @@ public:
   }
   
   coloring_cube_t getColoring(); 
+  void swendsenWangMove(); 
 
 
 private:

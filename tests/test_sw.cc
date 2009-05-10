@@ -55,4 +55,24 @@ BOOST_AUTO_TEST_CASE(remove_unsimilar_gibbs_test)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_swendsaen_wang)
+{
+  using namespace boost; 
+
+  wrap_cube_t cube(boost::extents[1][5][6]); 
+  for (int i = 0; i < 1; i++) {
+    for (int j = 0; j < 5; j++) {
+      for (int k = 0; k < 6; k++) {
+	cube[i][j][k]=0; 
+      }
+    }
+  }
+  
+  rng_t rng; 
+  swendsen_wang(cube, rng, 0, 2); 
+  
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END(); 

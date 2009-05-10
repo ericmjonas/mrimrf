@@ -1,6 +1,12 @@
 #include "sw.h"
 #include "util.h"
 #include <boost/graph/connected_components.hpp>
+#include <boost/graph/random.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/visitors.hpp>
+
 graph_t wrap_cube_to_graph(const wrap_cube_t & pc)
 {
   /*
@@ -130,6 +136,27 @@ coloring_cube_t graph_to_coloring_cube(graph_t & g, coords_t dims)
 
 }
 
+struct set_color : public base_visitor<set_color> {
+  typedef on_discover_vertex event_filter; 
+
+  set_color(wrap_cube_t & wrapcube, int val) :
+    wrapcube_(wrapcube), 
+    tgtcolor_(val)
+  {
+
+  }
+
+  template <class Vertex, class Graph>
+  void operator()(Vertex v, Graph & G) {
+    coords_t coords= G[v].coordinates; 
+    wrapcube_[coords[0]][coords[1]][coords[2]] = tgtcolor_; 
+  }
+
+  wrap_cube_t wrapcube_; 
+  int tgtcolor_;
+
+}; 
+
 void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
 {
 
@@ -140,5 +167,13 @@ void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
   flip_edges_off(g, rng, 0.3); 
   
   // randomly get a component
-  
+
+  // ugh, this is linear! FIXME!
+  graph_t::vertex_descriptor d = random_vertex(g, rng);
+
+  // what are we going to color it? 
+  int c = intrand(rng, minval, maxval); 
+  std::vector<vertex_color_t> color(num_vertices(g)); 
+  depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, c)))); 
+
 }

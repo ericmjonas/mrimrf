@@ -43,6 +43,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
     .def("setSeed", &MRIMRF::setSeed)
     .add_property("score", &MRIMRF::getLogScore)
     .def("getColoring", &MRIMRF::getColoring)
+    .def("swendsenWangMove", &MRIMRF::swendsenWangMove)
     ;
 
 //   class_<GibbsImageMRF>("GibbsImageMRF", init<const ObsEnergy_t & >())
