@@ -1,4 +1,5 @@
 #include "sw.h"
+#include "util.h"
 
 graph_t wrap_cube_to_graph(const wrap_cube_t & pc)
 {
@@ -71,6 +72,27 @@ void disconnect_nonsimilar_phase_edges(graph_t & g)
   ei_t ei, ei_end;
   for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
     if( g[source(*ei, g)].phasewrap  != g[target(*ei, g)].phasewrap) {
+      edges_to_remove.push_back(*ei); 
+    }
+  }
+  
+  for(std::list<graph_t::edge_descriptor >::iterator i = edges_to_remove.begin(); 
+      i  != edges_to_remove.end(); i++) {
+    remove_edge(*i, g);     
+  }
+  
+}
+
+void flip_edges_off(graph_t & g, rng_t & rng, float p)
+{
+  /* flip each remaining edge off with probability p 
+  */ 
+
+  typedef  graph_traits<graph_t>::edge_iterator ei_t; 
+  std::list<graph_t::edge_descriptor> edges_to_remove; 
+  ei_t ei, ei_end;
+  for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
+    if (p < unirand(rng)) {
       edges_to_remove.push_back(*ei); 
     }
   }

@@ -13,6 +13,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include "types.h"
 
+
 using namespace boost; 
 
 typedef boost::array<size_t, 3> coords_t;
@@ -34,6 +35,8 @@ typedef boost::adjacency_list<boost::vecS, boost::vecS,
 graph_t wrap_cube_to_graph(const wrap_cube_t & pc);
 
 void disconnect_nonsimilar_phase_edges(graph_t & g); 
+
+void flip_edges_off(graph_t & g, rng_t & rng, float p);
 
 
 #endif //
