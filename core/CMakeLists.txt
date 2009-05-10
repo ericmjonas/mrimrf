@@ -8,6 +8,7 @@ set(mrimrf_core_SOURCES
 test.cc
 util.cc
 mrimrf.cc
+sw.cc
 )
 
 

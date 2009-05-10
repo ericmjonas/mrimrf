@@ -192,6 +192,7 @@ float MRIMRF::recomputeLogScore()
 {
 
   float score(0.0); 
+  // FIXME : Do we double-count here? each factor is shared by two edges!
 
   // Initially compute score
   for(int i = 0; i < latentPhaseWraps_.shape()[0]; ++i) {

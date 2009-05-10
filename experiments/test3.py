@@ -11,7 +11,7 @@ import core
 pyplot.ion()
 
 N = 100
-MAXPHASE = 4
+MAXPHASE = 6
 #pb = synth.plane_box(N, 10, 1.0, 20)
 pb = synth.sphere(N, 30, 1.0, MAXPHASE*np.pi)
 pb += np.random.rand(N, N) * 0
@@ -21,7 +21,7 @@ pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
 print pb_wrapped.shape
 print pb_wrapped.dtype
 mrf = core.pymrimrf.MRIMRF(MAXPHASE, pb_wrapped)
-mrf.setSeed(3)
+mrf.setSeed(5)
 
 imresult = mrf.latentPhase
 plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
