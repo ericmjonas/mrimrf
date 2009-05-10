@@ -1,6 +1,7 @@
 #include <mrimrf.h>
 #include "util.h"
 #include "types.h"
+#include "sw.h"
 
 MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
   MAXWRAPCOUNT_(MaxWrapCount),
@@ -206,4 +207,35 @@ float MRIMRF::recomputeLogScore()
   return score; 
 
 
+}
+
+void MRIMRF::swendsenWangMove()
+{
+
+  graph_t g = wrap_cube_to_graph(latentPhaseWraps_); 
+  
+  disconnect_nonsimilar_phase_edges(g); 
+
+  flip_edges_off(g, rng_, 0.3); 
+
+  // randomly pick a 
+
+}
+
+coloring_cube_t MRIMRF::getColoring()
+{
+  graph_t g = wrap_cube_to_graph(latentPhaseWraps_); 
+  
+  disconnect_nonsimilar_phase_edges(g); 
+
+  flip_edges_off(g, rng_, 0.3); 
+
+  coords_t c; 
+  c[0] = latentPhaseWraps_.shape()[0];
+  c[1] = latentPhaseWraps_.shape()[1];
+  c[2] = latentPhaseWraps_.shape()[2];
+
+  coloring_cube_t c1 = graph_to_coloring_cube(g, c); 
+
+  return c1; 
 }

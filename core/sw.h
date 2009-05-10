@@ -38,5 +38,9 @@ void disconnect_nonsimilar_phase_edges(graph_t & g);
 
 void flip_edges_off(graph_t & g, rng_t & rng, float p);
 
+coloring_cube_t graph_to_coloring_cube(graph_t & g, coords_t c); 
+
+void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval); 
+
 
 #endif //

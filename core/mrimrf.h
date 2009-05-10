@@ -26,6 +26,8 @@ public:
     return score_; 
   }
   
+  coloring_cube_t getColoring(); 
+
 
 private:
   const int MAXWRAPCOUNT_; 

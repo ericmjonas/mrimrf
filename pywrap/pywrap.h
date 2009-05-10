@@ -64,6 +64,11 @@ PyArray_TYPES getEnum<unsigned short>()
 }
 
 
+template <>
+PyArray_TYPES getEnum<size_t>()
+{
+     return PyArray_ULONGLONG;
+}
 
 template<typename T, int DIM>
 struct multiarray_to_pyarray

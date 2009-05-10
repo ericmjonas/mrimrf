@@ -7,6 +7,7 @@
 
 
 typedef boost::multi_array<char, 3> wrap_cube_t;
+typedef boost::multi_array<size_t, 3> coloring_cube_t;
 typedef boost::multi_array<float, 3> phase_cube_t;
 typedef boost::multi_array<float, 4> observation_tensor_t; 
 

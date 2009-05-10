@@ -1,6 +1,6 @@
 #include "sw.h"
 #include "util.h"
-
+#include <boost/graph/connected_components.hpp>
 graph_t wrap_cube_to_graph(const wrap_cube_t & pc)
 {
   /*
@@ -64,7 +64,7 @@ void disconnect_nonsimilar_phase_edges(graph_t & g)
   /*
     Delete all edges in the graph that do not 
     connect similarly-colored components
-
+ 
    */
   
   typedef  graph_traits<graph_t>::edge_iterator ei_t; 
@@ -101,5 +101,44 @@ void flip_edges_off(graph_t & g, rng_t & rng, float p)
       i  != edges_to_remove.end(); i++) {
     remove_edge(*i, g);     
   }
+
+}
+
+coloring_cube_t graph_to_coloring_cube(graph_t & g, coords_t dims)
+{
+  // returns the coloring cube of a graph showing the connected 
+  // components
+  std::vector<int> component(num_vertices(g));
+  coloring_cube_t colorcube(dims); 
+  
+  connected_components(g, &component[0]); 
+  
+  typedef graph_t::vertex_iterator vi_t; 
+  std::pair<vi_t, vi_t> vp = vertices(g); 
+  int pos(0); 
+  for(vi_t v = vp.first; v != vp.second; ++v) {
+    int i = g[*v].coordinates[0]; 
+    int j = g[*v].coordinates[1]; 
+    int k = g[*v].coordinates[2]; 
+
+    colorcube[i][j][k] = component[pos];
+    pos++; 
+
+  }
+  
+  return colorcube; 
+
+}
+
+void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
+{
+
+  graph_t g = wrap_cube_to_graph(wrapcube); 
+  
+  disconnect_nonsimilar_phase_edges(g); 
+  
+  flip_edges_off(g, rng, 0.3); 
+  
+  // randomly get a component
   
 }

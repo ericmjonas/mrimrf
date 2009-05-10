@@ -10,10 +10,10 @@ import core
 
 pyplot.ion()
 
-N = 100
+N = 50
 MAXPHASE = 6
 #pb = synth.plane_box(N, 10, 1.0, 20)
-pb = synth.sphere(N, 30, 1.0, MAXPHASE*np.pi)
+pb = synth.sphere(N, 20, 1.0, MAXPHASE*np.pi)
 pb += np.random.rand(N, N) * 0
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
 print pb_wrapped.shape
@@ -24,12 +24,18 @@ mrf = core.pymrimrf.MRIMRF(MAXPHASE, pb_wrapped)
 mrf.setSeed(5)
 
 imresult = mrf.latentPhase
+pyplot.subplot(1, 2, 1)
 plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
                        interpolation='nearest',
                        vmin=-MAXPHASE*2*np.pi,
                        vmax=MAXPHASE*2*np.pi)
+coloring = mrf.getColoring().astype(float)
+pyplot.subplot(1, 2, 2)
+plotcoloring = pyplot.imshow(coloring[0], interpolation='nearest',
+                             vmin=0, vmax=50)
 
-temps = np.linspace(100, 1, 100, -1)
+
+temps = np.linspace(10, 1, 100, -1)
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
@@ -37,6 +43,8 @@ for t in temps:
     for i in range(100):
         mrf.sequential_gibbs_scan()
     plotim.set_array(mrf.latentPhase[0])
+    coloring = mrf.getColoring().astype(float)
+    plotcoloring.set_array(coloring[0])
     pyplot.draw()
 
 

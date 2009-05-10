@@ -28,6 +28,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
   pymulconv<float, 4>();
  
   pymulconv<char, 3>(); 
+  pymulconv<size_t, 3>(); 
 
   def("hello", &hello); 
   def("testarray", &testarray); 
@@ -41,6 +42,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
     .def("random_gibbs_scan", &MRIMRF::random_gibbs_scan)
     .def("setSeed", &MRIMRF::setSeed)
     .add_property("score", &MRIMRF::getLogScore)
+    .def("getColoring", &MRIMRF::getColoring)
     ;
 
 //   class_<GibbsImageMRF>("GibbsImageMRF", init<const ObsEnergy_t & >())
