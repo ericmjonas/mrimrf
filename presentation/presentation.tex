@@ -21,7 +21,9 @@
 \section{Factor Graphs and Markov Random Fields}
 \begin{frame}
 \frametitle{Markov Random Fields and Factor Graphs}
-Markov Random Field: A particular type of probabilistic model
+
+Markov random field, undirected graphical model, etc. 
+
 Factor Graph: a particular language for describing graphical models
 \cite{Kschischang01}
 
@@ -42,20 +44,52 @@ Two views on our MRF
 \section{Inference in MRFs}
 
 \begin{frame}
-  \frametitle{Markov-Chain Monte Carlo}
-  Set up a state space so that the expectation is the target distribution
-  Used in situations where you know $\pi^\ast(x)$ but not $\pi(x)$
+\frametitle{Inference in MRFs}
+Our MRF has given us $p*(x | D)$, which is not convex, 
+and not even a probability distribution. 
+
+We would like to somehow ``solve'' this system to get a rough
+sense of the distribution $p(x |D)$. 
+
+Two generic approaches: 
+\begin{itemize}
+\item draw samples from $p(x | D)$
+\item Try and compute the MAP numerically. 
+\end{itemize}
+\pause
+
+We focus on sampling. 
 
 \end{frame}
 
 \begin{frame}
+  \frametitle{Markov-Chain Monte Carlo}
+  Markov Property: next state only depends on current state
+  \begin{equation}
+    p(x_{t+1} | x_{1:t) = p(x_{t+1} | x_{t})
+  \end{equation}
+
+  Ergodic markov chains have stationary distributions
+
+    Set up a state space so that the expectation is the target distribution
+  Used in situations where you know $\pi^\ast(x)$ but not $\pi(x)$. 
+  
+\end{frame}
+
+\begin{frame}
   \frametitle{Metropolis Hastings}
-  forward backward jacobian 
+  One way to construct this Markov Chain
+  
+  \begin{equation}
+    a = \min (1, \frac{p(x^\ast)}{p(x)} \cdot 
+  \frac{q(x \rightarrow x^\ast)}{q(x^\ast \rightarrow x)})
+  \end{equation}
 \end{frame}
 
 \begin{frame}
   \frametitle{Gibbs Sampling}
   like MH but along an axis
+  Look, we can gibbs sample in image MRFs with discrete state spaces
 
 \end{frame}
 
