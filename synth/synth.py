@@ -21,12 +21,13 @@ def plane_box(N, r, min, max):
 
     return d
 
-def sphere(N, R, phasemin, phasemax):
+def sphere(N, R, phasemin, phasemax, d = None):
     """
     Generate a centered sphere with phase that varies from min
     to max
     """
-    d = np.zeros((N, N), dtype=np.float)
+    if d == None:
+        d = np.zeros((N, N), dtype=np.float)
 
     
     x_center = N/2
