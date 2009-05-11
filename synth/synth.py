@@ -40,6 +40,20 @@ def sphere(N, R, phasemin, phasemax, d = None):
     return d
 
 
+def spirals(N=1, MAXPHASE=np.pi):
+    """
+    Load the spirals dataset, downsampling by N
+    """
+    from PIL import Image
+    im = Image.open("../synth/spirals.png")
+    a = np.asarray(im)
+    am = a.mean(axis=2)
+    am = am[::N, ::N]
+    
+    normed = am / np.mean(am)
+    
+    return normed * MAXPHASE
+
 def test_plane_box():
     pb = plane_box(256, 80, 1.0, 20.0)
     pyplot.subplot(1, 2, 1)

@@ -24,7 +24,11 @@
 
 Markov random field, undirected graphical model, etc. 
 
-Factor Graph: a particular language for describing graphical models
+Factor Graph: a particular language / notation for markov random fields
+
+Show CPT
+talk about markov blanket
+
 \cite{Kschischang01}
 
 \end{frame}
@@ -36,25 +40,42 @@ large number of verticies
 O(1) (constant local) connectivity
 \end{frame}
 
-\begin{frame} 
-\frametitle{MRFs for Phase Unwrapping}
-Two views on our MRF
+\begin{frame}
+\frametitle{Bayesian Factor Graphs}
+Decompose into prior, likelihood, etc. 
 \end{frame}
+
+\subsection{MRFs for Phase Unwrapping}
+
+\begin{frame} 
+\frametitle{MRFs for Phase: Frey's approach}
+more classical image MRF with delta functions, continuous state
+\end{frame}
+
+\begin{frame}
+\frametitle{discrete latent state, uniform factors}
+\end{frame}
+
+\begin{frame}
+\frametitle{discrete latent state, unique factors}
+My formulation
+
+\end{frame} 
 
 \section{Inference in MRFs}
 
 \begin{frame}
 \frametitle{Inference in MRFs}
 Our MRF has given us $p*(x | D)$, which is not convex, 
-and not even a probability distribution. 
+and not even a valid probability distribution. 
 
 We would like to somehow ``solve'' this system to get a rough
 sense of the distribution $p(x |D)$. 
 
 Two generic approaches: 
 \begin{itemize}
-\item draw samples from $p(x | D)$
-\item Try and compute the MAP numerically. 
+\item draw samples from $p(x | D)$ to empirically estimate 
+\item optimize to find MAP solution
 \end{itemize}
 \pause
 
@@ -84,13 +105,18 @@ We focus on sampling.
     a = \min (1, \frac{p(x^\ast)}{p(x)} \cdot 
   \frac{q(x \rightarrow x^\ast)}{q(x^\ast \rightarrow x)})
   \end{equation}
+
+  %FIXME MH walk figure
+  \cite{Metropolis1953}
 \end{frame}
 
 \begin{frame}
   \frametitle{Gibbs Sampling}
-  like MH but along an axis
+  like MH but along an axis, useful when we can condition
+  on other variables. 
   Look, we can gibbs sample in image MRFs with discrete state spaces
-
+  \cite{GemanGeman1983}
+  % Fixme Gibbs s
 \end{frame}
 
 \begin{frame}
@@ -105,9 +131,23 @@ We focus on sampling.
 
 \begin{frame}
   \frametitle{MRFs and Parallelism}
+  The conditional independence assumptions allow fine-grained parallelism
+  
+\end{frame}
+
+\section{Our Implementation}
+\begin{frame}
+  \frametitle{Our Implementation}
+  use SW, etc. 
+  python, numpy, scipy, c++, boost, etc. 
+  multithreaded
 \end{frame}
 
 \section{Performance}
+
+How to measure performance? I'm going to go for 
+log-likelihood, 
+
 
 \subsection{Synthetic Data}
 \begin{frame}

@@ -40,6 +40,13 @@ private:
     return (x1 -x2) * (x1 - x2); 
   }
   
+  inline float step_prior(float x1, float x2) {
+    if ((x1 - x2) < 0.5) {
+      return 0; 
+    }
+    return (x1 -x2) * (x1 - x2) * 4; 
+  }
+  
   float recomputeLogScore(); 
 
   inline float getCurrentPhaseValue(int i, int j, int k) {
