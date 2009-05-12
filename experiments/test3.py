@@ -57,12 +57,12 @@ plotWraps = pyplot.imshow(mrf.latentPhaseWraps[0].astype(np.float),
 ##                            vmin=0, vmax=1)
 pyplot.draw()
 
-temps = np.linspace(100, 1, 1000, -1)
+temps = np.linspace(100, 1, 10, -1)
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
-    for i in range(100):
+    for i in range(10):
         mrf.sequential_gibbs_scan()
     #latent_pre_sw = mrf.latentPhase[0]
     #mrf.swendsenWangMove()
