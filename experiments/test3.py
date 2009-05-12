@@ -31,7 +31,6 @@ mrf.setSeed(5)
 
 pyplot.subplot(1, 3, 1)
 
-pyplot.figure()
 imresult = mrf.latentPhase
 pyplot.imshow(pb_wrapped[0], cmap=pyplot.cm.gray, interpolation='nearest',
               vmin=-np.pi, vmax=np.pi)
@@ -62,7 +61,7 @@ print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
-    for i in range(10):
+    for i in range(20):
         mrf.sequential_gibbs_scan()
     #latent_pre_sw = mrf.latentPhase[0]
     #mrf.swendsenWangMove()

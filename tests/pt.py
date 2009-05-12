@@ -21,12 +21,12 @@ pyplot.ion()
 
 pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
 
-temps = np.linspace(10, 100, 10)
+temps = np.linspace(10, 100, 20)
 mrfs = core.pt.PT(pb_wrapped, MAXPHASE, temps)
 
 imdata = []
 for ti in range(len(temps)):
-    pyplot.subplot(len(temps), 1, ti + 1)
+    pyplot.subplot(np.ceil(len(temps)/4.0), 4, ti + 1)
     imresult = mrfs.chains[ti].latentPhase
     plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
                            interpolation='nearest',

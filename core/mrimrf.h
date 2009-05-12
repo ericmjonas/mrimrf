@@ -41,7 +41,7 @@ private:
   }
   
   inline float step_prior(float x1, float x2) {
-    if ((x1 - x2) < 0.5) {
+    if (abs(x1 - x2) < 0.5) {
       return 0; 
     }
     return (x1 -x2) * (x1 - x2) * 4; 
