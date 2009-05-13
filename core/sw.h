@@ -44,7 +44,8 @@ coloring_cube_t graph_to_coloring_cube(graph_t & g, coords_t c);
 void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval); 
 
 
-graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob); 
+graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, 
+			 float prob, float delta); 
 
 
 #endif //

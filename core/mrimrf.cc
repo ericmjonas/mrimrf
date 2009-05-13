@@ -13,7 +13,7 @@ MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
   score_(0.0)
 {
   score_ = recomputeLogScore(); 
-  generateDataDrivenPartitioning(0.5); 
+  generateDataDrivenPartitioning(0.5, 0.1); 
   
 }
 
@@ -235,7 +235,7 @@ coloring_cube_t MRIMRF::getColoring()
   return c1; 
 }
 
-bool MRIMRF::ddmcmc_flip_gibbs(float prob)
+bool MRIMRF::ddmcmc_flip_gibbs(float prob, float delta)
 {
   /*
     This is an attempt at doing a data-driven version of something
@@ -253,7 +253,7 @@ bool MRIMRF::ddmcmc_flip_gibbs(float prob)
     
    */
   
-  generateDataDrivenPartitioning(prob); 
+  generateDataDrivenPartitioning(prob, delta); 
 
   graph_t g = partitioning_; 
   // now find connected comps
@@ -319,10 +319,10 @@ bool MRIMRF::ddmcmc_flip_gibbs(float prob)
   }
     
 }
-void MRIMRF::generateDataDrivenPartitioning(double prob)
+void MRIMRF::generateDataDrivenPartitioning(float prob, float delta)
 {
   
-  partitioning_ = data_based_graph(observation_, rng_, prob); 
+  partitioning_ = data_based_graph(observation_, rng_, prob, delta); 
   
 }
 

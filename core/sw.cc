@@ -251,23 +251,24 @@ void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
   
 
 //   // ugh, this is linear! FIXME!
-//   graph_t::vertex_descriptor d = random_vertex(g, rng);
-// //   std::cout << "selected vertex at location" << g[d].coordinates[0]
-// //  	    << " " << g[d].coordinates[1]
-// //  	    << " " << g[d].coordinates[2] << std::endl; 
-// //   std::cout << "its color is " << wrapcube[g[d].coordinates[0]][g[d].coordinates[1]][g[d].coordinates[1]]
-// // 	    << std::endl; 
-//   // what are we going to color it? 
-//   int c = intrand(rng, minval, maxval); 
-// //   std::cout << "Changing to " << c << std::endl; 
-//   std::vector<vertex_color_t> color(num_vertices(g)); 
-//   depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, c)))); 
+  graph_t::vertex_descriptor d = random_vertex(g, rng);
+//   std::cout << "selected vertex at location" << g[d].coordinates[0]
+//  	    << " " << g[d].coordinates[1]
+//  	    << " " << g[d].coordinates[2] << std::endl; 
+//   std::cout << "its color is " << wrapcube[g[d].coordinates[0]][g[d].coordinates[1]][g[d].coordinates[1]]
+// 	    << std::endl; 
+  // what are we going to color it? 
+  int cc = intrand(rng, minval, maxval); 
+//   std::cout << "Changing to " << c << std::endl; 
+  std::vector<vertex_color_t> color(num_vertices(g)); 
+  depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, cc)))); 
 
 }
 
 
 
-graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob)
+graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob, 
+			 float delta)
 {
   /*
     return a lattice graph with edges probabilistically flipped off
@@ -299,8 +300,8 @@ graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob)
     bool sampled_remedge = binomial(p, rng); 
     bool remedge; 
     // attempt at non-stocahstic:
-    if (abs(p2-p1) < 0.1) {
-      remedge = false; // sampled_remedge;
+    if (abs(p2-p1) < delta) {
+      remedge = sampled_remedge;
     } else {
       remedge = true;
     }

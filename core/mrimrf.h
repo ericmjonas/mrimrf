@@ -29,11 +29,11 @@ public:
   coloring_cube_t getColoring(); 
   coloring_cube_t getCurrentPartitioning(); 
   
-  void generateDataDrivenPartitioning(double prob); 
+  void generateDataDrivenPartitioning(float prob, float delta); 
 
   void swendsenWangMove(); 
 
-  bool  ddmcmc_flip_gibbs(float prob); 
+  bool  ddmcmc_flip_gibbs(float prob, float delta); 
 
 private:
   const int MAXWRAPCOUNT_; 

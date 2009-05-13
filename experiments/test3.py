@@ -13,8 +13,8 @@ N = 384
 MAXPHASE = 5
 #pb = synth.plane_box(N, 10, 1.0, 20)
 bk = np.random.normal(0.0, 1.0, size = (N, N)) * 0.1
-pb = synth.sphere(N, 100, 2.0, MAXPHASE*np.pi, bk)
-#pb = synth.spirals(N=3, MAXPHASE=MAXPHASE*np.pi)
+pb = synth.sphere(N, 130, 2.0, MAXPHASE*np.pi, bk)
+pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
 ## pyplot.imshow(pb)
 ## pyplot.show()
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
@@ -58,7 +58,7 @@ plotWraps = pyplot.imshow(mrf.latentPhaseWraps[0].astype(np.float),
 pyplot.subplot(2, 2, 4)
 plotPartitions = pyplot.imshow(mrf.currentPartitioning[0],
                                interpolation = 'nearest',
-                               vmin = 0, vmax=10)
+                               vmin = 0, vmax=200)
 
 
 pyplot.draw()
@@ -70,8 +70,8 @@ for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
     for i in range(10):
-        mrf.random_gibbs_scan()
-    mrf.ddmcmc_flip_gibbs(0.0)
+        mrf.sequential_gibbs_scan()
+    mrf.ddmcmc_flip_gibbs(0.1**t, 1.0/t)
 
     plotim.set_array(mrf.latentPhase[0])
     plotWraps.set_array(mrf.latentPhaseWraps[0].astype(np.float))
