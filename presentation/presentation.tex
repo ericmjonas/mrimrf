@@ -16,9 +16,12 @@
 \end{frame}
 
 \section{Phase Unwrapping for MR}
+\begin{frame}
 
+\end{frame}
 
 \section{Factor Graphs and Markov Random Fields}
+
 \begin{frame}
 \frametitle{Markov Random Fields and Factor Graphs}
 
@@ -30,7 +33,6 @@ Show CPT
 talk about markov blanket
 
 \cite{Kschischang01}
-
 \end{frame}
 
 \begin{frame} 
@@ -59,7 +61,6 @@ more classical image MRF with delta functions, continuous state
 \begin{frame}
 \frametitle{discrete latent state, unique factors}
 My formulation
-
 \end{frame} 
 
 \section{Inference in MRFs}
@@ -80,21 +81,20 @@ Two generic approaches:
 \pause
 
 We focus on sampling. 
-
 \end{frame}
 
 \begin{frame}
   \frametitle{Markov-Chain Monte Carlo}
   Markov Property: next state only depends on current state
+
   \begin{equation}
-    p(x_{t+1} | x_{1:t) = p(x_{t+1} | x_{t})
+    p(x_{t+1} | x_{1:t} = p(x_{t+1} | x_{t})
   \end{equation}
 
   Ergodic markov chains have stationary distributions
-
-    Set up a state space so that the expectation is the target distribution
-  Used in situations where you know $\pi^\ast(x)$ but not $\pi(x)$. 
   
+  Set up a state space so that the expectation is the target distribution
+  Used in situations where you know $\pi^\ast(x)$ but not $\pi(x)$. 
 \end{frame}
 
 \begin{frame}
@@ -177,6 +177,12 @@ log-likelihood,
   Better neighborhood connectivity / likelihood? 
   GPU implementation 
   Better visualization of posterior?
+\end{frame}
+
+\begin{frame}
+  \frametitle{More information}
+  Source is on github
+  
 \end{frame}
 
 \end{document}

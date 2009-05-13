@@ -34,7 +34,6 @@ BOOST_PYTHON_MODULE(pymrimrf)
   def("hello", &hello); 
   def("testarray", &testarray); 
   def("partial_replica_exchange_move", partial_replica_exchange_move);
-
   class_<MRIMRF, boost::noncopyable>("MRIMRF", init<int, phase_cube_t>())
     .def("sequential_gibbs_scan", &MRIMRF::sequential_gibbs_scan)
     .add_property("latentPhase", &MRIMRF::getLatentPhases)
@@ -43,7 +42,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
     .add_property("temp", &MRIMRF::getTemp, &MRIMRF::setTemp)
     .def("random_gibbs_scan", &MRIMRF::random_gibbs_scan)
     .def("setSeed", &MRIMRF::setSeed)
-    .add_property("score", &MRIMRF::getLogScore)
+    .add_property("score", &MRIMRF::recomputeLogScore)
     .def("getColoring", &MRIMRF::getColoring)
     .def("swendsenWangMove", &MRIMRF::swendsenWangMove)
     .def("ddmcmc_flip_gibbs", &MRIMRF::ddmcmc_flip_gibbs)

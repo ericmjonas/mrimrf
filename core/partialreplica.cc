@@ -26,6 +26,9 @@ void partial_replica_exchange_move(MRIMRF & primary_replica,
   int numcomp = connected_components(g, &component[0]); 
   
   for(int attempt = 0; attempt < attemptcount; attempt++) {
+    float primary_initial_score = primary_replica.recomputeLogScore(); 
+    float secondary_initial_score = secondary_replica.recomputeLogScore(); 
+        
     int comp_to_change = intrand(primary_replica.rng_, 0, numcomp); 
     std::cout << "Changing component " << comp_to_change << std::endl; 
     std::list<coords_t> coordinates; 
@@ -48,9 +51,40 @@ void partial_replica_exchange_move(MRIMRF & primary_replica,
       int pw2 = secondary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]]; 
       primary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]] = pw2; 
       secondary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]] = pw1; 
-      
     }
-        
+    
+    float primary_swap_score = primary_replica.recomputeLogScore(); 
+    float secondary_swap_score = secondary_replica.recomputeLogScore(); 
+    
+    // From Liu 
+    float scoreratio = (primary_initial_score + secondary_initial_score) -
+      (primary_swap_score + secondary_swap_score); 
+    std::cout << "score ratio = " << scoreratio << std::endl; 
+    float prob = exp(scoreratio); 
+    bool val = binomial(prob, primary_replica.rng_); 
+    
+    if (val) {
+      // accept
+      // do nothing
+      std::cout << "Accepted" << std::endl; 
+
+    } else {
+
+      std::cout << "rejected" << std::endl; 
+      for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
+	  ci != coordinates.end(); ci++ ){
+	coords_t c = *ci; 
+	
+	int pw1 = primary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]]; 
+	int pw2 = secondary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]]; 
+	primary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]] = pw2; 
+	secondary_replica.latentPhaseWraps_[c[0]][c[1]][c[2]] = pw1; 
+	
+      }
+    
+
+    }
+      
   }
 
 }

@@ -302,9 +302,9 @@ bool MRIMRF::ddmcmc_flip_gibbs(float prob, float delta)
     double sum =  logSumProbVect(probvect);
     for(int qi = 0; qi < probvect.size(); qi++) {
       probvect[qi] = exp(probvect[qi] - sum); 
-      std::cout << probvect[qi] << " "; 
+      //std::cout << probvect[qi] << " "; 
     }
-    std::cout << std::endl; 
+    //std::cout << std::endl; 
 
     int phasesel = sampleFromProbabilities(rng_, probvect); 
     

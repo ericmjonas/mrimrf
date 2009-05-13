@@ -7,17 +7,19 @@ sys.path.append("../")
 from synth import synth
 from synth import util
 import core
+import data
 
-
-N = 384
-MAXPHASE = 5
+N = 100
+MAXPHASE = 10
 #pb = synth.plane_box(N, 10, 1.0, 20)
 bk = np.random.normal(0.0, 1.0, size = (N, N)) * 0.1
-pb = synth.sphere(N, 130, 2.0, MAXPHASE*np.pi, bk)
-pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
+pb = synth.sphere(N, 40, 2.0, MAXPHASE*np.pi, bk)
+pb_wrapped = data.default(3)
+
+#pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
 ## pyplot.imshow(pb)
 ## pyplot.show()
-pb_wrapped = util.wrap_phase(pb).astype(np.float32)
+#pb_wrapped = util.wrap_phase(pb).astype(np.float32)
 ## pyplot.imshow(pb_wrapped)
 ## pyplot.show()
 pyplot.ion()
@@ -64,7 +66,7 @@ plotPartitions = pyplot.imshow(mrf.currentPartitioning[0],
 pyplot.draw()
 
 #temps = np.linspace(100, 1, 100, -1)
-temps = np.concatenate((np.logspace(2, 0, 10, -1), np.ones(1000)))
+temps = np.concatenate((np.logspace(2, 0, 100, -1), np.ones(1000)))
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
