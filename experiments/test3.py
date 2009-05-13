@@ -12,14 +12,14 @@ import core
 N = 100
 MAXPHASE = 5
 #pb = synth.plane_box(N, 10, 1.0, 20)
-#bk = np.random.normal(0.0, 1.0, size = (N, N))
-#pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
-pb = synth.spirals(N=3, MAXPHASE=MAXPHASE*np.pi)
-pyplot.imshow(pb)
-pyplot.show()
+bk = np.random.normal(0.0, 1.0, size = (N, N)) * 0.1
+pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
+#pb = synth.spirals(N=3, MAXPHASE=MAXPHASE*np.pi)
+## pyplot.imshow(pb)
+## pyplot.show()
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
-pyplot.imshow(pb_wrapped)
-pyplot.show()
+## pyplot.imshow(pb_wrapped)
+## pyplot.show()
 pyplot.ion()
 
 print pb_wrapped.shape
@@ -29,14 +29,14 @@ print pb_wrapped.dtype
 mrf = core.pymrimrf.MRIMRF(MAXPHASE, pb_wrapped)
 mrf.setSeed(5)
 
-pyplot.subplot(1, 3, 1)
+pyplot.subplot(2, 2, 1)
 
 imresult = mrf.latentPhase
 pyplot.imshow(pb_wrapped[0], cmap=pyplot.cm.gray, interpolation='nearest',
               vmin=-np.pi, vmax=np.pi)
 
 
-pyplot.subplot(1, 3, 2)
+pyplot.subplot(2, 2, 2)
 plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
                        interpolation='nearest',
                        vmin=-MAXPHASE*np.pi,
@@ -46,7 +46,7 @@ plotim = pyplot.imshow(imresult[0], cmap=pyplot.cm.gray,
 ## fcoloring = (coloring % 256).astype(float)
 ## plotcoloring = pyplot.imshow(fcoloring[0], interpolation='nearest',
 ##                              vmin=0, vmax=256, cmap=pyplot.cm.prism)
-pyplot.subplot(1, 3, 3)
+pyplot.subplot(2, 2, 3)
 plotWraps = pyplot.imshow(mrf.latentPhaseWraps[0].astype(np.float),
                           interpolation='nearest',
                           vmin = -MAXPHASE, vmax=MAXPHASE)
@@ -54,22 +54,28 @@ plotWraps = pyplot.imshow(mrf.latentPhaseWraps[0].astype(np.float),
 ## plotDeltas = pyplot.imshow(mrf.latentPhaseWraps[0] == mrf.latentPhaseWraps[0],
 ##                           interpolation='nearest',
 ##                            vmin=0, vmax=1)
+
+pyplot.subplot(2, 2, 4)
+plotPartitions = pyplot.imshow(mrf.currentPartitioning[0],
+                               interpolation = 'nearest',
+                               vmin = 0, vmax=10)
+
+
 pyplot.draw()
 
-temps = np.linspace(100, 1, 10, -1)
+#temps = np.linspace(100, 1, 100, -1)
+temps = np.concatenate((np.logspace(2, 0, 100, -1), np.ones(100)))
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
-    for i in range(20):
+    for i in range(100):
         mrf.sequential_gibbs_scan()
-    #latent_pre_sw = mrf.latentPhase[0]
-    #mrf.swendsenWangMove()
-    #latent_post_sw = mrf.latentPhase[0]
+    mrf.ddmcmc_flip_gibbs(0.2)
 
-    #plotDeltas.set_array(latent_pre_sw != latent_post_sw)
     plotim.set_array(mrf.latentPhase[0])
     plotWraps.set_array(mrf.latentPhaseWraps[0].astype(np.float))
+    plotPartitions.set_array(mrf.currentPartitioning[0])
     pyplot.draw()
 
 

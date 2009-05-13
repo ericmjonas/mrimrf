@@ -1,5 +1,6 @@
 #include "sw.h"
 #include "util.h"
+#include "math.h"
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/random.hpp>
 #include <boost/graph/depth_first_search.hpp>
@@ -33,6 +34,66 @@ graph_t wrap_cube_to_graph(const wrap_cube_t & pc)
 	c[2] = k;
 	g[*vp.first].coordinates = c; 
 	g[*vp.first].phasewrap = pc[i][j][k];
+	virtex_pos_map[i][j][k] = *vp.first; 
+	vp.first++; 
+	
+      }
+    }
+  }
+
+  // now add the edges!
+  for(int i = 0; i < pc.shape()[0]; i++) {
+    for(int j = 0; j < pc.shape()[1]; j++) {
+      for(int k = 0; k < pc.shape()[2]; k++) {
+	
+
+	if (i < pc.shape()[0]-1 )  {
+	  add_edge(*virtex_pos_map[i][j][k], *virtex_pos_map[i+1][j][k], g); 
+	}
+	
+	if (j < pc.shape()[1]-1 )  {
+	  add_edge(*virtex_pos_map[i][j][k], *virtex_pos_map[i][j+1][k], g); 
+	}
+	
+	if (k < pc.shape()[2]-1 )  {
+	  add_edge(*virtex_pos_map[i][j][k], *virtex_pos_map[i][j][k+1], g); 
+	}
+	
+      }
+    }
+  }
+
+  return g; 
+}
+
+
+graph_t phase_cube_to_graph(const phase_cube_t & pc)
+{
+  /*
+    turn our latent phase cube into a graph
+    
+   */
+  
+  graph_t g(pc.num_elements());
+  typedef graph_traits<graph_t>::vertex_iterator virtex_iter; 
+  std::pair<virtex_iter, virtex_iter> vp; 
+  vp = vertices(g); 
+
+  // fully connect
+  boost::multi_array<virtex_iter, 3> 
+    virtex_pos_map(boost::extents[pc.shape()[0]][pc.shape()[1]][pc.shape()[2]]); 
+  
+  for(int i = 0; i < pc.shape()[0]; i++) {
+    for(int j = 0; j < pc.shape()[1]; j++) {
+      for(int k = 0; k < pc.shape()[2]; k++) {
+
+	coords_t c; 
+	c[0] = i; 
+	c[1] = j;
+	c[2] = k;
+	g[*vp.first].coordinates = c; 
+	g[*vp.first].phasewrap = 0;
+	g[*vp.first].obsval = pc[i][j][k];
 	virtex_pos_map[i][j][k] = *vp.first; 
 	vp.first++; 
 	
@@ -202,4 +263,53 @@ void swendsen_wang(wrap_cube_t & wrapcube, rng_t & rng, int minval, int maxval)
 //   std::vector<vertex_color_t> color(num_vertices(g)); 
 //   depth_first_search(g, visitor(make_dfs_visitor(set_color(wrapcube, c)))); 
 
+}
+
+
+
+graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob)
+{
+  /*
+    return a lattice graph with edges probabilistically flipped off
+    based on some DETERMINISTIC function of the data pc
+
+    prob is prob of _REMOVING_ an edge
+   */ 
+
+  graph_t g = phase_cube_to_graph(pc); 
+
+
+  typedef  graph_traits<graph_t>::edge_iterator ei_t; 
+  std::list<graph_t::edge_descriptor> edges_to_remove; 
+  ei_t ei, ei_end;
+  for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
+//     coords_t coord1 = g[source(*ei, g)].coordinates; 
+//     coords_t coord2 = g[target(*ei, g)].coordinates; 
+    
+//     float p1  = pc[coord1[0]][coord1[1]][coord2[2]]; 
+//     float p2  = pc[coord2[0]][coord2[1]][coord2[2]]; 
+    float p1 = g[source(*ei, g)].obsval; 
+    float p2 = g[target(*ei, g)].obsval; 
+
+    //std::cout << "abs(p2 -p1)=" << abs(p2 - p1) * 10 << std::endl; 
+    float p = min(1.0, prob); //  abs(p2-p1) * prob); 
+    bool sampled_remedge = binomial(p, rng); 
+    bool remedge; 
+    // attempt at non-stocahstic:
+    if (abs(p2-p1) < 0.1) {
+      remedge = sampled_remedge;
+    } else {
+      remedge = true;
+    }
+
+    if (remedge) {
+      edges_to_remove.push_back(*ei); 
+    }
+  }
+  std::cout << "Removing " << edges_to_remove.size() << std::endl; 
+  for(std::list<graph_t::edge_descriptor >::iterator i = edges_to_remove.begin(); 
+      i  != edges_to_remove.end(); i++) {
+    remove_edge(*i, g);     
+  }
+  return g;
 }

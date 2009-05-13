@@ -4,7 +4,7 @@
 #include <boost/utility.hpp>
 #include "types.h"
 #include "util.h"
-
+#include "sw.h"
 
 class MRIMRF : boost::noncopyable
 {
@@ -27,8 +27,13 @@ public:
   }
   
   coloring_cube_t getColoring(); 
+  coloring_cube_t getCurrentPartitioning(); 
+  
+  void generateDataDrivenPartitioning(double prob); 
+
   void swendsenWangMove(); 
 
+  bool  ddmcmc_flip_gibbs(float prob); 
 
 private:
   const int MAXWRAPCOUNT_; 
@@ -42,6 +47,7 @@ private:
   
   inline float step_prior(float x1, float x2) {
     if (abs(x1 - x2) < 0.5) {
+
       return 0; 
     }
     return (x1 -x2) * (x1 - x2) * 4; 
@@ -55,10 +61,12 @@ private:
   }
   
   float computeLogScoreAtVoxel(int i, int j, int k); 
-
+  
   rng_t rng_; 
   float temp_; 
-  float score_; 
+  float score_;
+
+  graph_t partitioning_; 
 }; 
 
 

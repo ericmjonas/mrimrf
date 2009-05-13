@@ -1,4 +1,6 @@
 #include <mrimrf.h>
+#include <boost/graph/connected_components.hpp>
+
 #include "util.h"
 #include "types.h"
 #include "sw.h"
@@ -11,7 +13,8 @@ MRIMRF::MRIMRF(int MaxWrapCount, phase_cube_t obsval) :
   score_(0.0)
 {
   score_ = recomputeLogScore(); 
-
+  generateDataDrivenPartitioning(0.5); 
+  
 }
 
 void MRIMRF::sequential_gibbs_scan()
@@ -230,4 +233,107 @@ coloring_cube_t MRIMRF::getColoring()
   coloring_cube_t c1 = graph_to_coloring_cube(g, c); 
 
   return c1; 
+}
+
+bool MRIMRF::ddmcmc_flip_gibbs(float prob)
+{
+  /*
+    This is an attempt at doing a data-driven version of something
+    swendsen-wang-like. Basically we just probabilisticly flip
+    
+    1. randomly partition the space into a collection of 
+    segments, informed by the data
+
+    2. gibbs one of those segments
+    
+    3. done! 
+
+    I'm not really convinced we can gibbs here (vs M-H) but we'll see!
+
+    
+   */
+  
+  generateDataDrivenPartitioning(prob); 
+
+  graph_t g = partitioning_; 
+  // now find connected comps
+  std::vector<int> component(num_vertices(g));
+  int numcomp = connected_components(g, &component[0]); 
+
+  std::cout << "The graph has " << num_edges(g) << " edges"
+	    << " and " <<  numcomp << " components" 
+	    << " prob = " << prob << std::endl;
+
+  int comp_to_change = intrand(rng_, 0, numcomp); 
+
+  // now get those vertices? 
+
+  std::list<coords_t> coordinates; 
+
+  typedef graph_t::vertex_iterator vi_t; 
+  std::pair<vi_t, vi_t> vp = vertices(g); 
+  int pos = 0; 
+  for(vi_t v = vp.first; v != vp.second; ++v) {
+    if(component[pos] == comp_to_change) { 
+      coordinates.push_back(g[*v].coordinates); 
+    }
+    pos++; 
+  }
+  
+  // now, gibbs on this set of components
+  probvector_t probvect; 
+  probvect.reserve(MAXWRAPCOUNT_*2+1); 
+  for (int wrap_i = -MAXWRAPCOUNT_; wrap_i <= MAXWRAPCOUNT_; ++wrap_i) {
+
+    // set all of the phase wraps in this component
+    for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
+	ci != coordinates.end(); ci++ ){
+      coords_t c = *ci; 
+
+      latentPhaseWraps_[c[0]][c[1]][c[2]] = wrap_i;
+    }
+    
+    probvect.push_back(recomputeLogScore()); 
+
+    
+  }
+
+  double sum = 0.0; 
+  for(int qi = 0; qi < probvect.size(); qi++) {
+    sum += probvect[qi]; 
+  }
+  
+  for(int qi = 0; qi < probvect.size(); qi++) {
+    probvect[qi] = probvect[qi] / sum; 
+  }
+  
+  int phasesel = sampleFromProbabilities(rng_, probvect); 
+  
+  for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
+      ci != coordinates.end(); ci++ ){
+    coords_t c = *ci; 
+    
+    latentPhaseWraps_[c[0]][c[1]][c[2]] = phasesel - MAXWRAPCOUNT_; 
+  }
+  score_ = recomputeLogScore(); 
+  
+  
+}
+void MRIMRF::generateDataDrivenPartitioning(double prob)
+{
+  
+  partitioning_ = data_based_graph(observation_, rng_, prob); 
+  
+}
+
+coloring_cube_t MRIMRF::getCurrentPartitioning()
+{
+  
+  coords_t c; 
+  c[0] = observation_.shape()[0]; 
+  c[1] = observation_.shape()[1]; 
+  c[2] = observation_.shape()[2]; 
+
+  return graph_to_coloring_cube(partitioning_, c); 
+
 }

@@ -72,3 +72,15 @@ double logSumProbVect(const probvector_t & lprobs){
 
 }
 
+bool binomial(float p, rng_t& rng)
+{
+  float x= unirand(rng); 
+  if (x < p) {
+    return true; 
+
+  }
+  
+  return false; 
+
+
+}

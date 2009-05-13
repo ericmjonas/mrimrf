@@ -44,6 +44,8 @@ BOOST_PYTHON_MODULE(pymrimrf)
     .add_property("score", &MRIMRF::getLogScore)
     .def("getColoring", &MRIMRF::getColoring)
     .def("swendsenWangMove", &MRIMRF::swendsenWangMove)
+    .def("ddmcmc_flip_gibbs", &MRIMRF::ddmcmc_flip_gibbs)
+    .add_property("currentPartitioning", &MRIMRF::getCurrentPartitioning)
     ;
 
 //   class_<GibbsImageMRF>("GibbsImageMRF", init<const ObsEnergy_t & >())
