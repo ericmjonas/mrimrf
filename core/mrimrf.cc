@@ -207,7 +207,7 @@ float MRIMRF::recomputeLogScore()
     }
   }
 
-  return score; 
+  return score / 2;  // we double count
 
 
 }

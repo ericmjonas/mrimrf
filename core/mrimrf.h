@@ -35,7 +35,7 @@ public:
 
   bool  ddmcmc_flip_gibbs(float prob, float delta); 
 
-private:
+  //private:
   const int MAXWRAPCOUNT_; 
   const phase_cube_t observation_; 
   wrap_cube_t latentPhaseWraps_; 

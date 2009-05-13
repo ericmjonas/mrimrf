@@ -9,6 +9,7 @@ test.cc
 util.cc
 mrimrf.cc
 sw.cc
+partialreplica.cc
 )
 
 

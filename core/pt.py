@@ -16,7 +16,7 @@ class PT(object):
     def run(self):
         for c in self.chains:
             c.sequential_gibbs_scan()
-            c.ddmcmc_flip_gibbs(0.1**c.temp, 1.0/c.temp)
+            #c.ddmcmc_flip_gibbs(0.1**c.temp, 1.0/c.temp)
             
     def attemptswap(self):
         if len(self.chains) > 1:
@@ -53,6 +53,13 @@ class PT(object):
 
             
                 
-            
+    def partial_swap(self):
+        if len(self.chains) > 1:
+            i = np.random.randint(0, len(self.chains) -1)
+
+            low_c = self.chains[i]
+            high_c = self.chains[i+1]
+        
+            pymrimrf.partial_replica_exchange_move(high_c, low_c, 10)
             
         

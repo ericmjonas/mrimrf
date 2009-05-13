@@ -4,6 +4,7 @@
 
 #include "types.h"
 #include "mrimrf.h"
+#include "partialreplica.h"
 
 using namespace boost::python; 
 void hello(std::string msg)
@@ -32,6 +33,7 @@ BOOST_PYTHON_MODULE(pymrimrf)
 
   def("hello", &hello); 
   def("testarray", &testarray); 
+  def("partial_replica_exchange_move", partial_replica_exchange_move);
 
   class_<MRIMRF, boost::noncopyable>("MRIMRF", init<int, phase_cube_t>())
     .def("sequential_gibbs_scan", &MRIMRF::sequential_gibbs_scan)
