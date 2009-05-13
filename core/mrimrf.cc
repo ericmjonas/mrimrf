@@ -263,61 +263,61 @@ bool MRIMRF::ddmcmc_flip_gibbs(float prob)
   std::cout << "The graph has " << num_edges(g) << " edges"
 	    << " and " <<  numcomp << " components" 
 	    << " prob = " << prob << std::endl;
-
-  int comp_to_change = intrand(rng_, 0, numcomp); 
-
-  // now get those vertices? 
-
-  std::list<coords_t> coordinates; 
-
-  typedef graph_t::vertex_iterator vi_t; 
-  std::pair<vi_t, vi_t> vp = vertices(g); 
-  int pos = 0; 
-  for(vi_t v = vp.first; v != vp.second; ++v) {
-    if(component[pos] == comp_to_change) { 
-      coordinates.push_back(g[*v].coordinates); 
-    }
-    pos++; 
-  }
   
-  // now, gibbs on this set of components
-  probvector_t probvect; 
-  probvect.reserve(MAXWRAPCOUNT_*2+1); 
-  for (int wrap_i = -MAXWRAPCOUNT_; wrap_i <= MAXWRAPCOUNT_; ++wrap_i) {
+  
+  // now get those vertices? 
+  for (int n = 0; n < 1; n++) {
+    int comp_to_change = intrand(rng_, 0, numcomp); 
+    
+    std::list<coords_t> coordinates; 
+    
+    typedef graph_t::vertex_iterator vi_t; 
+    std::pair<vi_t, vi_t> vp = vertices(g); 
+    int pos = 0; 
+    for(vi_t v = vp.first; v != vp.second; ++v) {
+      if(component[pos] == comp_to_change) { 
+	coordinates.push_back(g[*v].coordinates); 
+      }
+      pos++; 
+    }
+    
+    // now, gibbs on this set of components
+    probvector_t probvect; 
+    probvect.reserve(MAXWRAPCOUNT_*2+1); 
+    for (int wrap_i = -MAXWRAPCOUNT_; wrap_i <= MAXWRAPCOUNT_; ++wrap_i) {
+      
+      // set all of the phase wraps in this component
+      for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
+	ci != coordinates.end(); ci++ ){
+	coords_t c = *ci; 
+	
+	latentPhaseWraps_[c[0]][c[1]][c[2]] = wrap_i;
+      }
+      double s= recomputeLogScore(); 
+      probvect.push_back(s); 
+      
+      
+    }
+    
+    double sum =  logSumProbVect(probvect);
+    for(int qi = 0; qi < probvect.size(); qi++) {
+      probvect[qi] = exp(probvect[qi] - sum); 
+      std::cout << probvect[qi] << " "; 
+    }
+    std::cout << std::endl; 
 
-    // set all of the phase wraps in this component
+    int phasesel = sampleFromProbabilities(rng_, probvect); 
+    
     for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
 	ci != coordinates.end(); ci++ ){
       coords_t c = *ci; 
-
-      latentPhaseWraps_[c[0]][c[1]][c[2]] = wrap_i;
+      
+      latentPhaseWraps_[c[0]][c[1]][c[2]] = phasesel - MAXWRAPCOUNT_; 
     }
     
-    probvect.push_back(recomputeLogScore()); 
-
+    score_ = recomputeLogScore(); 
+  }
     
-  }
-
-  double sum = 0.0; 
-  for(int qi = 0; qi < probvect.size(); qi++) {
-    sum += probvect[qi]; 
-  }
-  
-  for(int qi = 0; qi < probvect.size(); qi++) {
-    probvect[qi] = probvect[qi] / sum; 
-  }
-  
-  int phasesel = sampleFromProbabilities(rng_, probvect); 
-  
-  for(std::list<coords_t>::const_iterator ci = coordinates.begin(); 
-      ci != coordinates.end(); ci++ ){
-    coords_t c = *ci; 
-    
-    latentPhaseWraps_[c[0]][c[1]][c[2]] = phasesel - MAXWRAPCOUNT_; 
-  }
-  score_ = recomputeLogScore(); 
-  
-  
 }
 void MRIMRF::generateDataDrivenPartitioning(double prob)
 {

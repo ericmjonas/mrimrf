@@ -273,7 +273,10 @@ graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob)
     return a lattice graph with edges probabilistically flipped off
     based on some DETERMINISTIC function of the data pc
 
-    prob is prob of _REMOVING_ an edge
+    prob is prob of _REMOVING_ an edge, 
+    if the threshold is less than valid
+
+
    */ 
 
   graph_t g = phase_cube_to_graph(pc); 
@@ -297,7 +300,7 @@ graph_t data_based_graph(const phase_cube_t & pc, rng_t & rng, float prob)
     bool remedge; 
     // attempt at non-stocahstic:
     if (abs(p2-p1) < 0.1) {
-      remedge = sampled_remedge;
+      remedge = false; // sampled_remedge;
     } else {
       remedge = true;
     }

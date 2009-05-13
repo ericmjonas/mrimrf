@@ -9,11 +9,11 @@ from synth import util
 import core
 
 
-N = 100
+N = 384
 MAXPHASE = 5
 #pb = synth.plane_box(N, 10, 1.0, 20)
 bk = np.random.normal(0.0, 1.0, size = (N, N)) * 0.1
-pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
+pb = synth.sphere(N, 100, 2.0, MAXPHASE*np.pi, bk)
 #pb = synth.spirals(N=3, MAXPHASE=MAXPHASE*np.pi)
 ## pyplot.imshow(pb)
 ## pyplot.show()
@@ -64,14 +64,14 @@ plotPartitions = pyplot.imshow(mrf.currentPartitioning[0],
 pyplot.draw()
 
 #temps = np.linspace(100, 1, 100, -1)
-temps = np.concatenate((np.logspace(2, 0, 100, -1), np.ones(100)))
+temps = np.concatenate((np.logspace(2, 0, 10, -1), np.ones(1000)))
 print "trying", len(temps), "temps"
 for t in temps:
     print "t = ", t, "score = ", mrf.score, mrf.score * t
     mrf.temp = t
-    for i in range(100):
-        mrf.sequential_gibbs_scan()
-    mrf.ddmcmc_flip_gibbs(0.2)
+    for i in range(10):
+        mrf.random_gibbs_scan()
+    mrf.ddmcmc_flip_gibbs(0.0)
 
     plotim.set_array(mrf.latentPhase[0])
     plotWraps.set_array(mrf.latentPhaseWraps[0].astype(np.float))
