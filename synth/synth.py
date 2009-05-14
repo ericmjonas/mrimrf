@@ -40,6 +40,25 @@ def sphere(N, R, phasemin, phasemax, d = None):
     return d
 
 
+def sphere2(N, R, phasemin, phasemax, d = None):
+    """
+    Generate a centered sphere with phase that varies from min
+    to max
+    """
+    if d == None:
+        d = np.zeros((N, N), dtype=np.float)
+
+    
+    x_center = N/2
+    y_center = N/2
+    for x in xrange(N):
+        for y in xrange(N):
+            r = np.sqrt((x - x_center)**2 + (y-y_center)**2)
+            if r < R:
+                d[x, y] = phasemax -  (phasemax-phasemin) * r**2/R**2
+    return d
+
+
 def spirals(N=1, MAXPHASE=np.pi):
     """
     Load the spirals dataset, downsampling by N

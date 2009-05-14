@@ -12,11 +12,11 @@ import experiments
 
 outputTable = tables.openFile("output.h5", 'w')
 
-N = 384
+N = 128
 MAXPHASE = 10
 #pb = synth.plane_box(N, 10, 1.0, 20)
 bk = np.random.normal(0.0, 1.0, size = (N, N))
-pb = synth.sphere(N, 140, 2.0, MAXPHASE*np.pi, bk)
+pb = synth.sphere(N, 48, 2.0, MAXPHASE*np.pi, bk)
 t = outputTable.createArray("/", "truth", pb)
 t.attrs.maxphase = MAXPHASE
 
@@ -29,12 +29,13 @@ pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
 t = outputTable.createArray("/", "data", pb_wrapped)
 
 
-temps = [100., 80.,  60., 40.,  30., 20., 10.,  1.]
+temps = [40., 30.,  25., 20.,  15, 10., 5.,  1.]
 mrfs = core.pt.PT(pb_wrapped, MAXPHASE, temps)
 
+rootchaing = outputTable.createGroup("/", "chains")
 chaingroups = {}
 for i, t in enumerate(temps):
-    g = outputTable.createGroup("/", "chain_%d" % i)
+    g = outputTable.createGroup(rootchaing, "chain_%d" % i)
     g._v_attrs.temp = t
     chaingroups[t] = g
 
@@ -59,6 +60,7 @@ for iter in xrange(1000):
         
         a = outputTable.createArray(chaingroups[t], "sample%05d" % iter, c.latentPhase)
         a.attrs.score = c.score
+        a.attrs.iteration = iter
         
     if iter % 10 == 9:
         mrfs.attemptswap()

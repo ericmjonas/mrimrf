@@ -1,0 +1,13 @@
+An attempt to use Markov-Chain Monte Carlo methods to perform phase
+unwrapping modeled as a low-level vision factor graph (Markov Random
+Field). Uses advanced MCMC techniques including parallel tempering, 
+data-driven MCMC, and partial replica exchange. Does not perform
+great, but serves as an interesting starting point. 
+
+Implemented in: 
+  core: mostly c++ 
+  wrapper: python
+
+
+see presentation/presentation.pdf for more
+

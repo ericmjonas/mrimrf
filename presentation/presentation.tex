@@ -17,6 +17,16 @@
 
 \section{Phase Unwrapping for MR}
 \begin{frame}
+  \frametitle{Phase Unwrapping for MR} 
+    \begin{columns}[t]
+    \begin{column}{7cm}
+      \includegraphics[width=7cm]{phase_wrap_example.pdf}
+
+    \end{column}
+    \begin{column}{5cm}
+      We know phase informaiton varies smoothly except at boundaries
+    \end{column}
+  \end{columns}
 
 \end{frame}
 
@@ -25,7 +35,7 @@
   \frametitle{Markov Random Fields}
   \begin{columns}
     \begin{column}{5cm}
-      \includegraphics[width=1in]{4node_mrf.pdf}
+      \includegraphics[width=5cm]{4node_mrf.pdf}
     \end{column}
     \begin{column}{5cm}
       Markov random field, undirected graphical model, etc. 
@@ -41,7 +51,7 @@
     \end{column}
     \begin{column}{5cm}
       \begin{itemize}
-        \item Factor Graphs \cite{Kschischang_Factor_01} express the same concepts
+        \item Factor Graphs \cite{kschischang_factor_2001} express the same concepts
           as MRFs but make the \textbf{factors} explicit. 
         \end{itemize}
     \end{column}
@@ -112,7 +122,7 @@ Our factor graph gives us P(X, Y)
 
 \begin{frame} 
   \frametitle{MRFs for Phase: Frey's approach}
-  In Ying and Frey's model \cite{Ying_Unwrapping_2006} they formulate 2-D phase
+  In Ying and Frey's model \cite{lei_ying_unwrapping_2006} they formulate 2-D phase
   unwrapping as a low-level vision MRF problem. 
   
   \begin{columns}
@@ -131,17 +141,13 @@ Our factor graph gives us P(X, Y)
   \begin{columns}
     \begin{column}{5cm}
       \begin{block}{Observation Potential}
-        \begin{equation*}
-          f_o = \delta ((Y_{(i, j)}\mod 2\pi) - X_{(i, j)})
-        \end{equation*}
+        $f_o = \delta ((Y_{(i, j)} mod 2\pi) - X_{(i, j)})$
       \end{block}
     \end{column}
 
     \begin{column}{5cm}
       \begin{block}{Latent potential} 
-        \begin{equation*}
-          f_l(X_1, X_2) = (X_1 - X_2)^2
-        \end{equation*}
+        $f_l(X_1, X_2) = (X_1 - X_2)^2$
       \end{block}
     \end{column}
     
@@ -181,7 +187,7 @@ My formulation
   \frametitle{Markov-Chain Monte Carlo}
   Markov Property: next state only depends on current state
   \begin{equation*}
-    p(x_{t+1} | x_{1:t} = p(x_{t+1} | x_{t})
+    p(x_{t+1} | x_{1:t}) = p(x_{t+1} | x_{t})
   \end{equation*}
 
   Ergodic markov chains have stationary distributions
@@ -189,14 +195,25 @@ My formulation
   Set up a state space so that the asymptotic limit is the target distribution
 
   Used in situations where you want to sample from
-  $\pi(x)$ but only can compute $\pi^\ast(x)$
+  $\pi(x)$ but only can compute $\pi^\ast(x) = Z \pi(x)$, $Z$ unknown. 
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Metropolis Hastings}
-  Consider a proposal distribution, $q(x \rightarrow x^\ast)$ 
-  We draw $x^\ast$ as a \textit{new target state} from this distribution. 
+  \frametitle{Metropolis-Hastings}
+  \begin{itemize}
+    \item From statistical physics   \cite{Metropolis_Equation_1953}! 
+
+    \item Simple idea: randomly propose new location in state space, 
+      sometimes go there! 
+    \end{itemize}
+
+  We use a proposal distribution, $q(x \rightarrow x^\ast)$ 
+  Draw $x^\ast$ as a \textit{new target state} from this distribution. 
+  \begin{equation*}
+    x^\ast  \similar q(x^\ast | x)
+  \end{equation*}
+
   We compute the ``Acceptance'' ratio : 
   
   \begin{equation*}
@@ -205,7 +222,7 @@ My formulation
   \end{equation*}
 
   %FIXME MH walk figure
-  \cite{Metropolis_Equation_1953}
+
 \end{frame}
 
 \begin{frame}
@@ -240,7 +257,7 @@ My formulation
       without changing the target distribution
   \end{itemize}
   
-  \cite{Tu_Image_2002}
+  \cite{zhuowen_tu_image_2002}
   Work Through
 \end{frame}
 
@@ -260,7 +277,7 @@ My formulation
   \frametitle{Our Implementation}
   use SW, etc. 
   python, numpy, scipy, c++, boost, etc. 
-  multithreaded
+  multithreaded C++ 
 \end{frame}
 
 \section{Performance}
@@ -289,7 +306,24 @@ log-likelihood,
   \frametitle{PRELUDE}
 \end{frame}
 
-\section{Concluson and Future Directions}
+\section{Conclusion and Future Directions}
+\begin{frame}
+  \frametitle{Why, man, why?}
+  Why go through all this effort for mediocre performance? 
+  \begin{itemize}
+    \item Why be bayesian?  
+       - incorporate prior information explicitly
+       - methods compose
+    \item Why use MCMC? 
+       - MCMC ``black boxes'' that compose nicely \cite{Bonawitz_Composable_2008}
+    \item Why use factor graphs? 
+       - reasonable prior expressing local dependence 
+       - factors allow programmatic evaluation of conditional independencies, 
+       thus can easily identify opportunities for parallelism
+  \end{itemize}
+  
+\end{frame}
+
 \begin{frame}
   \frametitle{Where to now?}
   Exact sampling using Systematic Stochsatic Search
@@ -300,8 +334,16 @@ log-likelihood,
 
 \begin{frame}
   \frametitle{More information}
-  Source is on github
-  
+  \begin{block}{Try it out}
+    Source and presentation available for download on github
+    \url{https://github.com/ericmjonas/mrimrf/}
+  \end{block}
 \end{frame}
+
+\bibliographystyle{plain}
+
+\begin{frame}[allowframebreaks]{References}
+\bibliography{mrimrf.bib}
+\end{frame} 
 
 \end{document}
