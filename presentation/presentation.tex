@@ -71,9 +71,12 @@
       \includegraphics[width=4cm]{4node_fg.pdf}
     \end{column}
     \begin{column}{5cm}
+      Factor Graphs \cite{kschischang_factor_2001} express the same concepts
+      as MRFs but make the \textbf{factors} explicit. 
       \begin{itemize}
-        \item Factor Graphs \cite{kschischang_factor_2001} express the same concepts
-          as MRFs but make the \textbf{factors} explicit. 
+        \item bipartite graph
+        \item represents functional decomposition
+        \item lots of ways to solve them (BP, loopy BP, monte carlo, etc.)
         \end{itemize}
     \end{column}
   \end{columns}
@@ -84,9 +87,20 @@
 
 \begin{frame}
   \frametitle{Example : Ising Model}
-  Imagine you want to simulate a spin system
-  Statistical physics people love doing this
+  Imagine you want to simulate a spin system, like in a magnet
+  \begin{columns}
+    \begin{column}{7cm}
+      \includegraphics[width=7cm]{ising_fg}
+    \end{column}
+    \begin{column}{4cm}
+      Adjacent spins are in a lower energy (more probable) state if
+      they are parallel (sound familiar?).
 
+      \begin{block}{Factor value}
+        $f_{mn} = \frac{1}{Z}\exp(-\beta J_{mn}X_mX_N)$
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 
@@ -226,7 +240,7 @@ Bayesian inference is tricky.
 \begin{frame}
   \frametitle{Discrete latent state, unique factors}
   I reformulated the problem to make inference easier. 
-  
+  \vspace{1cm}
   \begin{columns}
     \begin{column}{5cm}
       \includegraphics[width=5cm]{phase_fg_unique.pdf}
@@ -238,6 +252,7 @@ Bayesian inference is tricky.
     \end{column}
   \end{columns}
   
+  \vspace{1cm}
   \begin{block}{Unique (non-homogeneous) factors} 
     Every two adjacent $X_i, X_j$ on the lattice have a unique factor
     between them that incorporates the information from the data. 
@@ -347,7 +362,9 @@ Bayesian inference is tricky.
   \item Periodically propose MH-style swaps between adjacent chains
   \item Let's hot chains move around in flatter energy landscape
   \end{itemize}
+  \begin{centering}
   \includegraphics[width=8cm]{parallel_temp_fig.pdf}
+  \end{centering}
 \end{frame}
 
 \begin{frame}
@@ -399,7 +416,16 @@ Bayesian inference is tricky.
 \begin{frame}
   \frametitle{MRFs and Parallelism}
   The conditional independence assumptions allow fine-grained parallelism
-  
+  \begin{centering}
+  \only<1> {
+    \includegraphics[width=7cm]{parallel_fg.pdf} 
+  } 
+  \only<2> {
+    \includegraphics[width=7cm]{parallel_fg_colored.pdf} 
+  } 
+  \end{centering}
+  Once colored, all nodes of a single color can be Gibbs sampled \textit{simultaneously}.
+
 \end{frame}
 
 \section{Results}
@@ -451,6 +477,16 @@ Bayesian inference is tricky.
 \end{frame}
 
 \subsection{Actual Data}
+\begin{frame}
+  \frametitle{Actual Data Results} 
+  \begin{itemize}
+  \item Thanks to Div and Audrey for providing the data
+  \item 0.5mm x 0.5mm x 3mm
+  \item TE = 15 ms; 60 ms is available (more wraps!) but didn't convert
+  \item subsampled by 4x
+  \item still took an hour! 
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{Scores from run}
@@ -471,37 +507,51 @@ Bayesian inference is tricky.
 \frame{\tableofcontents[currentsection]}
 
 \begin{frame}
-  \frametitle{Why, man, why?}
+  \frametitle{What the heck just happened?}
   Why go through all this effort for mediocre performance? 
+
+  \pause
+
+  \textbf{Why be Bayesian?  }
+  \pause
   \begin{itemize}[<+->]
-    \item Why be Bayesian?  
-       - incorporate prior information explicitly
-       - probabilistic models compose
-    \item Why use MCMC? 
-       - MCMC ``black boxes'' often do the right thing with minimal work
-       - Kernels compose nicely \cite{Bonawitz_Composable_2008}
-    \item Why use factor graphs? 
-       - reasonable prior expressing local dependence 
-       - factors allow programmatic evaluation of conditional independencies, 
-       thus can easily identify opportunities for parallelism
+  \item incorporate prior information explicitly
+  \item probabilistic models compose
   \end{itemize}
+  \pause
+  \textbf { Why use MCMC? }
+  \pause
   
+  \begin{itemize}[<+->]
+    \item  MCMC ``black boxes'' often do the right thing with minimal work
+    \item Kernels compose nicely \cite{bonawitz_composable_2008}
+  \end{itemize}
+  \pause
+  \textbf{Why use factor graphs? }
+  \pause
+  \begin{itemize}[<+->]
+  \item reasonable prior expressing local dependence 
+  \item factors allow programmatic analysis of conditional independencies, 
+    thus can easily identify opportunities for parallelism
+  \end{itemize}
+
 \end{frame}
 
 \begin{frame}
   \frametitle{Where to now?}
+  
+  Factor graphs have tremendous potential for imaging applications
+
   \begin{itemize}[<+->]
-  \item Exact sampling using Systematic Stochastic Search \cite{Mansinghka_Systematic_2008}
+  \item Exact sampling using Systematic Stochastic Search \cite{mansinghka_systematic_2009}
   \item Better neighborhood connectivity
   \item Better data likelihood
   \item GPU implementation -- CUDA makes this easy 
   \item Better visualization of posterior?
   \item Reconstruction? 
   \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{More information}
+  
+  \pause
   \begin{block}{Try it out}
     Source and presentation available for download on github
     \url{https://github.com/ericmjonas/mrimrf/}
