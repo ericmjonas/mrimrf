@@ -136,7 +136,7 @@
   \begin{column}{5cm}
     \begin{itemize}
     \item $Y = {y_{(i, j)}}$ : Observed Nodes
-    \item $X = {x_{(bi, j)}}$ : Hidden state we wish to estimate
+    \item $X = {x_{(i, j)}}$ : Hidden state we wish to estimate
     \item $P(Y | X) $ : measurement model (``likelihood'')
     \item $P(X) $ : prior 
 
@@ -155,16 +155,22 @@ Our factor graph gives us P(X, Y), we want $P(X | Y)$.
     P(X | Y ) = \frac{P(Y | X) P(X)}{\sum_XP(Y|X)P(X)} \propto P(Y | X) \cdot  P(X)
   \end{equation*}
 \end{block}
+\begin{columns}
+  \begin{column}{5cm}
+    For a low-level vision factor graph,
+    \begin{eqnarray*}
+      P(Y | X) =  \prod f_o(Y_i,  X_i) \\
+      P(X) = \prod_{(i, j) \in G} f_l(X_i, X_j)
+    \end{eqnarray*}
+    
+    That sum, $\sum_XP(Y|X)P(X)$, looks hard! This is a big part of why 
+    Bayesian inference is tricky. 
+    \end{column}
+    \begin{column}{6cm}
+      \includegraphics[width=6cm]{image_fg.pdf}
+    \end{column}
 
-For a low-level vision factor graph,
-\begin{eqnarray*}
-  P(Y | X) =  \prod f_o(Y_i,  X_i) \\
-  P(X) = \prod_{(i, j) \in G} f_l(X_i, X_j)
-\end{eqnarray*}
-
-That sum, $\sum_XP(Y|X)P(X)$, looks hard! This is a big part of why 
-Bayesian inference is tricky. 
-
+  \end{columns}
 \end{frame}
 
 \subsection{MRFs for Phase Unwrapping}
