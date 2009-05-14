@@ -15,8 +15,9 @@ class PT(object):
             
     def run(self):
         for c in self.chains:
-            c.sequential_gibbs_scan()
-            #c.ddmcmc_flip_gibbs(0.1**c.temp, 1.0/c.temp)
+            for i in range(10):
+                c.sequential_gibbs_scan()
+            c.ddmcmc_flip_gibbs(0.1**c.temp, 1.0/c.temp)
             
     def attemptswap(self):
         if len(self.chains) > 1:
@@ -25,8 +26,8 @@ class PT(object):
             low_c = self.chains[i]
             high_c = self.chains[i+1]
             
-            lowscore = low_c.score  #* low_c.temp
-            highscore = high_c.score  # * high_c.temp
+            lowscore = low_c.score  * low_c.temp
+            highscore = high_c.score  * high_c.temp
             lowtemp = low_c.temp
             hightemp = high_c.temp
 

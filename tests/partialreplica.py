@@ -7,15 +7,16 @@ sys.path.append("../")
 from synth import synth
 from synth import util
 import core
-
+import experiments
 
 N = 100
-MAXPHASE = 5
+MAXPHASE = 10
 #pb = synth.plane_box(N, 10, 1.0, 20)
-#bk = np.random.normal(0.0, 1.0, size = (N, N))
-#pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
-pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
-pb_wrapped = util.wrap_phase(pb).astype(np.float32)
+bk = np.random.normal(0.0, 1.0, size = (N, N))
+pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
+#pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
+#pb_wrapped = util.wrap_phase(pb).astype(np.float32)
+pb_wrapped = experiments.data.default(2)
 
 pyplot.ion()
 
@@ -39,7 +40,7 @@ for ti in range(len(temps)):
     
 for iter in xrange(10000):
     mrfs.run()
-    #mrfs.attemptswap()
+    mrfs.attemptswap()
     mrfs.partial_swap()
     for i in range(len(temps)):
         imdata[i].set_data(mrfs.chains[i].latentPhase[0])

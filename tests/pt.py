@@ -3,27 +3,40 @@ import numpy as np
 from matplotlib import pyplot
 import sys
 sys.path.append("../")
+import tables
 
 from synth import synth
 from synth import util
 import core
 import experiments
 
-N = 100
+outputTable = tables.openFile("output.h5", 'w')
+
+N = 384
 MAXPHASE = 10
 #pb = synth.plane_box(N, 10, 1.0, 20)
 bk = np.random.normal(0.0, 1.0, size = (N, N))
-pb = synth.sphere(N, 35, 2.0, MAXPHASE*np.pi, bk)
+pb = synth.sphere(N, 140, 2.0, MAXPHASE*np.pi, bk)
+t = outputTable.createArray("/", "truth", pb)
+t.attrs.maxphase = MAXPHASE
+
 #pb = synth.spirals(N=5, MAXPHASE=MAXPHASE*np.pi)
 pb_wrapped = util.wrap_phase(pb).astype(np.float32)
-pb_wrapped = experiments.data.default(8)
-
+#pb_wrapped = experiments.data.default(4)
 pyplot.ion()
 
 pb_wrapped.shape = (1, pb_wrapped.shape[0], pb_wrapped.shape[1])
+t = outputTable.createArray("/", "data", pb_wrapped)
+
 
 temps = [100., 80.,  60., 40.,  30., 20., 10.,  1.]
 mrfs = core.pt.PT(pb_wrapped, MAXPHASE, temps)
+
+chaingroups = {}
+for i, t in enumerate(temps):
+    g = outputTable.createGroup("/", "chain_%d" % i)
+    g._v_attrs.temp = t
+    chaingroups[t] = g
 
 imdata = []
 for ti in range(len(temps)):
@@ -38,14 +51,19 @@ for ti in range(len(temps)):
     
     imdata.append(plotim)
     
-for iter in xrange(10000):
+for iter in xrange(1000):
     mrfs.run()
+    for i in range(len(temps)):
+        c = mrfs.chains[i]
+        t = c.temp
+        
+        a = outputTable.createArray(chaingroups[t], "sample%05d" % iter, c.latentPhase)
+        a.attrs.score = c.score
+        
     if iter % 10 == 9:
         mrfs.attemptswap()
     for i in range(len(temps)):
         imdata[i].set_data(mrfs.chains[i].latentPhase[0])
     pyplot.draw()
-
-
-
+    outputTable.flush()
 pyplot.show()

@@ -5,13 +5,17 @@
 
 all: presentation.pdf
 
-SVGS = *.svg
-SVG_PDFS = $(SVGS:.svg=.pdf)
+SVGS = $(wildcard *.svg)
+SVG_PDFS = ${SVGS:.svg=.pdf}
 
-.svg.pdf :
-	inkscape --export-pdf=`basename $< .svg`.pdf $<
+.svg.pdf:
+	inkscape --export-pdf=`basename $< .svg`.full.pdf $<
+	pdfcrop `basename $< .svg`.full.pdf  `basename $< .svg`.pdf 
 
-
-presentation.pdf: $(SVG_PDFS) presentation.tex
+presentation.pdf:  presentation.tex $(SVG_PDFS)
 	pdflatex presentation.tex
 	pdflatex presentation.tex
+
+clean: 
+	rm presentation.pdf
+	rm $(SVG_PDFS)
