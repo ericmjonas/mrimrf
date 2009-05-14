@@ -30,19 +30,19 @@ pyplot.xlabel('sample')
 pyplot.ylabel('score (log)')
 pyplot.title("output_real_data.h5")
 
-## pyplot.figure()
-## MAXPHASE = h5file.root.truth.attrs.maxphase
-## ax = pyplot.subplot(2, 1, 1)
-## pyplot.imshow(h5file.root.truth.read(), cmap=pyplot.cm.gray,
-##               vmin=0, vmax=MAXPHASE *  np.pi)
-## ax.set_xticks([])
-## ax.set_yticks([])
+pyplot.figure()
+ax = pyplot.subplot(1, 2, 2)
+pyplot.imshow(h5file.root.chains.chain_9.sample00999.read()[0], cmap=pyplot.cm.gray,
+              vmin=0, vmax=2 *  np.pi)
+ax.set_xticks([])
+ax.set_yticks([])
 
-## ax =pyplot.subplot(2, 1, 2)
-## pyplot.imshow(h5file.root.data.read()[0],  cmap=pyplot.cm.gray,
-##               vmin=0, vmax= np.pi)
-## ax.set_xticks([])
-## ax.set_yticks([])
+
+ax =pyplot.subplot(1, 2, 1)
+pyplot.imshow(h5file.root.data.read()[0],  cmap=pyplot.cm.gray,
+              vmin=0, vmax= np.pi)
+ax.set_xticks([])
+ax.set_yticks([])
 
 pyplot.figure()
 iters = [2, 50, 100, 200, 300, 400, 800, 999]
