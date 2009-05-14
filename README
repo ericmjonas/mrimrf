@@ -1,4 +1,4 @@
-An attempt to use Markov-Chain Monte Carlo methods to perform phase
+An attempt to use Markov-Chain Monte Carlo methods to perform 3D phase
 unwrapping modeled as a low-level vision factor graph (Markov Random
 Field). Uses advanced MCMC techniques including parallel tempering, 
 data-driven MCMC, and partial replica exchange. Does not perform

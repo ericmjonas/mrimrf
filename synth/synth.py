@@ -3,14 +3,14 @@ import numpy as np
 from matplotlib import pyplot
 import util
 
-def plane_box(N, r, min, max):
+def plane_box(N, r, min, max, d = None):
     """
     generate square box in the center of size R
     with phase ranging along the X axis from min to max
     
     """
-
-    d = np.zeros((N, N), dtype=np.float)
+    if d == None:
+        d = np.zeros((N, N), dtype=np.float)
 
     
     x = N/2
